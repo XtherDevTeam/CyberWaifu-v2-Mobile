@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "CyberWaifu-v2 Mobile",
+    "slug": "cyberwaifu-v2-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "./plugins/withRemoveiOSNotificationEntitlement.js"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "userInterfaceStyle": "automatic",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSExceptionDomains": {
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            },
+            "xiaokang00010.top": {
+              "NSIncludesSubdomains": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        }
+      },
+      "bundleIdentifier": "com.jerrychau.XmediaCenterMusic"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.FOREGROUND_SERVICE"
+      ],
+      "userInterfaceStyle": "automatic",
+      "package": "com.jerrychau.XmediaCenterMusic"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "29912d14-98cc-45ad-94dc-aaafc5b21f6b"
+      }
+    },
+    "owner": "jerrychau"
+  }
+}
