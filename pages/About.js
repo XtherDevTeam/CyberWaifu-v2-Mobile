@@ -10,7 +10,6 @@ import { TextInput } from 'react-native-paper';
 import { Button } from 'react-native-paper';
 import { mdTheme } from '../shared/styles';
 import * as storage from '../shared/storage';
-import * as Api from '../shared/api';
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import Message from '../components/Message';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -30,14 +29,13 @@ const About = ({ navigation, route }) => {
   return (
     <>
       <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="About XmediaCenter 2 Music"></Appbar.Content>
+        <Appbar.Content title="About"></Appbar.Content>
       </Appbar.Header>
       <TouchableWithoutFeedback onPress={() => { }} accessible={false}>
         <>
           <ScrollView>
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <Card style={{ width: "95%" }}>
+              <Card style={{ width: "95%", marginBottom: 10 }}>
                 <Card.Cover source={require('../assets/yoimiya.jpg')} style={{ height: 128 }} />
                 <Card.Content style={{ marginTop: 15 }}>
                   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -46,7 +44,7 @@ const About = ({ navigation, route }) => {
                     <Text variant="bodyMedium" style={{ textAlign: 'center' }}>Version: 1.0.0(1)</Text>
                     <Text variant="bodyMedium" style={{ textAlign: 'center' }}>Made with ❤️ by Jerry Chou and Naganohara Yoimiya</Text>
                   </View>
-                  <View style={{ marginTop: 10 }}>
+                  <View style={{ marginTop: 10, marginBottom: 10 }}>
                     <Text variant='bodyMedium'>
                       Hello, world!
                     </Text>

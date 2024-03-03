@@ -21,6 +21,9 @@ import * as storage from './shared/storage'
 import axios from 'axios'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import About from './pages/About'
+import Home from './pages/Home'
+import SignIn from './pages/SignIn'
+import NewCharacter from './pages/NewCharacter'
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -36,12 +39,9 @@ function MainPage({ }) {
       <Tab.Screen name="Home" options={{
         tabBarIcon: "home"
       }} component={Home} />
-      <Tab.Screen options={{
-        tabBarIcon: "music"
-      }} name="Music" component={Music} />
-      <Tab.Screen options={{
-        tabBarIcon: "account-circle"
-      }} name="Profile" component={Profile} />
+      <Tab.Screen name="About" options={{
+        tabBarIcon: "information-outline"
+      }} component={About} />
     </Tab.Navigator>
   )
 }
@@ -55,9 +55,21 @@ export default function App() {
       <SafeAreaProvider>
         <NavigationContainer theme={scheme === 'dark' ? DarkTheme : LightTheme}>
 
-          <Stack.Navigator initialRouteName='About'>
-            <Stack.Screen name="About" options={{ headerShown: false, tabBarVisible: false }} component={
+          <Stack.Navigator initialRouteName='MainPage'>
+            <Stack.Screen name="About" options={{ headerShown: false }} component={
               About
+            }
+            />
+            <Stack.Screen name="Sign In" options={{ headerShown: false, tabBarVisible: false }} component={
+              SignIn
+            }
+            />
+            <Stack.Screen name="MainPage" options={{ headerShown: false }} component={
+              MainPage
+            }
+            />
+            <Stack.Screen name="New Character" options={{ headerShown: false }} component={
+              NewCharacter
             }
             />
           </Stack.Navigator>
