@@ -24,6 +24,7 @@ import About from './pages/About'
 import Home from './pages/Home'
 import SignIn from './pages/SignIn'
 import NewCharacter from './pages/NewCharacter'
+import Chatroom from './pages/Chatroom'
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -70,6 +71,10 @@ export default function App() {
             />
             <Stack.Screen name="New Character" options={{ headerShown: false }} component={
               NewCharacter
+            }
+            />
+            <Stack.Screen name="Chatroom" options={{ headerShown: false }} component={
+              Chatroom
             }
             />
           </Stack.Navigator>

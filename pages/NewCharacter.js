@@ -61,13 +61,17 @@ const NewCharacter = ({ navigation, route }) => {
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
           <Appbar.Content title={"New Character"}></Appbar.Content>
         </Appbar.Header>
-        <TouchableWithoutFeedback onPress={() => { }} accessible={false}>
+        <TouchableWithoutFeedback onPress={() => {
+          charNameInputRef.current?.blur()
+          charPromptInputRef.current?.blur()
+          exampleChatsInputRef.current?.blur()
+          pastMemoriesInputRef.current?.blur()
+        }} accessible={false}>
           <>
             <ScrollView style={{ height: '100%' }}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center' }}>
                   You can edit the new character's profile here.
-                  {/* Prompt is a piece of text included character's personalities, and introduction. */}
                 </Text>
 
                 <TextInput

@@ -71,7 +71,12 @@ const Home = ({ navigation, route }) => {
                     title={r.charName}
                     description={r.latestMsg}
                     left={props => <Avatar.Image style={{borderRadius: '100%'}} {...props} source={{uri: Remote.charAvatar(r.id)}} />}
-                    onPress={() => {}}>
+                    onPress={() => {
+                      navigation.navigate('Chatroom', {
+                        charName: r.charName,
+                        charId: r.id
+                      })
+                    }}>
                   </List.Item>))}
                 </ScrollView>
               </>}
