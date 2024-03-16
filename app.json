@@ -37,7 +37,7 @@
           }
         }
       },
-      "bundleIdentifier": "com.jerrychau.XmediaCenterMusic"
+      "bundleIdentifier": "com.jerrychau.CyberWaifuV2"
     },
     "android": {
       "adaptiveIcon": {
@@ -48,7 +48,7 @@
         "android.permission.FOREGROUND_SERVICE"
       ],
       "userInterfaceStyle": "automatic",
-      "package": "com.jerrychau.XmediaCenterMusic"
+      "package": "com.jerrychau.CyberWaifuV2"
     },
     "web": {
       "favicon": "./assets/favicon.png"

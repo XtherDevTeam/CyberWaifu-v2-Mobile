@@ -26,6 +26,14 @@ function checkIfLoggedIn() {
   })
 }
 
+function getUserName() {
+  return axios.get(`${serverUrl}/api/v1/service/info`).then(r => {
+    return r.data.data.session_username
+  }).catch(r => {
+    return 'guest'
+  })
+}
+
 function checkIfInitialized() {
   return axios.get(`${serverUrl}/api/v1/service/info`).then(r => {
     return r.data.data.initialized
@@ -95,6 +103,10 @@ function charAvatar(charId) {
   return `${serverUrl}/api/v1/char/${charId}/avatar`
 }
 
+function charHistory(charId, offset = 0) {
+  return axios.post(`${serverUrl}/api/v1/char/${charId}/history/${offset}`)
+}
+
 function charNew(charName, charPrompt, pastMemories, exampleChats) {
   return axios.post(`${serverUrl}/api/v1/char/new`, {
     charName,
@@ -108,5 +120,5 @@ export {
   checkIfLoggedIn, checkIfInitialized, signIn, refreshServerUrl, initialize,
   characterList, chatEstablish, chatMessage, chatTerminate,
   attachmentUploadAudio, attachmentUploadImage, attachmentDownload,
-  charNew, charAvatar
+  charNew, charAvatar, charHistory, getUserName
 }

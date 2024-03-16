@@ -32,6 +32,11 @@ const SignIn = ({ navigation, route }) => {
   const [messageState, setMessageState] = React.useState(false)
   const [messageText, setMessageText] = React.useState("")
   const [currentLoginState, setCurrentLoginState] = React.useState(false)
+  const [sessionUsername, setSessionUsername] = React.useState("")
+
+  function getUserName() {
+    Remote.getUserName().then(r => setSessionUsername(r))
+  }
 
   React.useEffect(() => {
     storage.inquireItem('serverAddress', (result, v) => {
@@ -54,6 +59,7 @@ const SignIn = ({ navigation, route }) => {
       Remote.checkIfInitialized().then(r => {
         console.log(r)
         if (r) {
+          getUserName()
           setServerInitialized(2)
         } else {
           setServerInitialized(1)
@@ -128,7 +134,7 @@ const SignIn = ({ navigation, route }) => {
             </>}
 
             {serverInitialized == 2 && <>
-              <Text variant="headlineSmall" style={{ marginTop: 20 }}>CyberWaifu-v2 Mobile</Text>
+              <Text variant="headlineSmall" style={{ marginTop: 20 }}>Welcome back, {sessionUsername}</Text>
               <TextInput
                 label="Password"
                 placeholder='Enter your password here...'
