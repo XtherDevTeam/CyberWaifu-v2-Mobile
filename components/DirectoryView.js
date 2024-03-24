@@ -1,7 +1,14 @@
 import React from 'react';
-import { View, Modal, StyleSheet, Platform, ScrollView } from 'react-native';
-import { Card, Title, Paragraph, Button, IconButton, withTheme, Text, Icon, DataTable } from 'react-native-paper';
-import * as Api from '../shared/api'
+
+import { View } from 'react-native';
+import {
+  Card,
+  DataTable,
+  Icon,
+  Text,
+} from 'react-native-paper';
+
+import * as Api from '../shared/api';
 import { mdTheme } from '../shared/styles';
 
 function DirectoryView({ path, showHeadImg, onPressItem, onLongPressItem, onError, width, height, style, onRef }) {

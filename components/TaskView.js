@@ -1,8 +1,16 @@
 import React from 'react';
-import { View, Modal, StyleSheet, Platform, ScrollView, Dimensions } from 'react-native';
-import { Card, Title, Paragraph, Button, IconButton, withTheme, Text, Icon, DataTable, Dialog, List } from 'react-native-paper';
-import * as Api from '../shared/api'
-import { mdTheme } from '../shared/styles';
+
+import {
+  Dimensions,
+  ScrollView,
+} from 'react-native';
+import {
+  Button,
+  Dialog,
+  Text,
+} from 'react-native-paper';
+
+import * as Api from '../shared/api';
 
 function TaskView({ taskId, onError, onDismiss, state }) {
   let intervalRef = React.useRef(null)

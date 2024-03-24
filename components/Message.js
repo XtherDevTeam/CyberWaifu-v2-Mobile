@@ -1,5 +1,9 @@
 import * as React from 'react';
-import { Appbar, Icon, PaperProvider, Snackbar, withTheme } from 'react-native-paper';
+
+import {
+  Snackbar,
+  withTheme,
+} from 'react-native-paper';
 
 function Message({ state, onStateChange, text, icon, theme, style, timeout }) {
   React.useEffect(() => {

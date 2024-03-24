@@ -1,27 +1,28 @@
 import * as React from 'react';
-import { ActivityIndicator, Appbar, Drawer, Icon, List, PaperProvider, Portal, adaptNavigationTheme, withTheme } from 'react-native-paper';
-import { Banner } from 'react-native-paper';
-import { Image, Keyboard, Platform, ScrollView, TouchableWithoutFeedback, useColorScheme } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Text } from 'react-native-paper';
-import { Avatar } from 'react-native-paper';
-import { View } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import { Button } from 'react-native-paper';
-import { mdTheme } from '../shared/styles';
-import Message from '../components/Message';
-import {
-  DarkTheme as NavigationDarkTheme,
-  DefaultTheme as NavigationDefaultTheme,
-  useFocusEffect,
-} from '@react-navigation/native';
-import * as Remote from '../shared/remote';
-const { LightTheme, DarkTheme } = adaptNavigationTheme({
-  reactNavigationLight: NavigationDefaultTheme,
-  reactNavigationDark: NavigationDarkTheme
-});
 
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+import {
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import {
+  Appbar,
+  Avatar,
+  List,
+  PaperProvider,
+  Portal,
+  Text,
+  withTheme,
+} from 'react-native-paper';
+
+import { useFocusEffect } from '@react-navigation/native';
+
+import Message from '../components/Message';
+import * as Remote from '../shared/remote';
+import { mdTheme } from '../shared/styles';
+
+const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical'
 
 const Home = ({ navigation, route }) => {
   const [messageState, setMessageState] = React.useState(false)

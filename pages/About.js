@@ -1,23 +1,23 @@
-import * as React from 'react';
-import { Appbar, Card, DataTable, Dialog, Drawer, Icon, PaperProvider, Portal, withTheme } from 'react-native-paper';
-import { Banner } from 'react-native-paper';
-import { Image, Keyboard, Platform, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Text } from 'react-native-paper';
-import { Avatar } from 'react-native-paper';
-import { View } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import { Button } from 'react-native-paper';
-import { mdTheme } from '../shared/styles';
-import * as storage from '../shared/storage';
-import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
-import Message from '../components/Message';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import * as Clipboard from 'expo-clipboard';
-import { Audio } from 'expo-av';
+import * as React from 'react'
+import { Appbar, Card, DataTable, Dialog, Drawer, Icon, PaperProvider, Portal, withTheme } from 'react-native-paper'
+import { Banner } from 'react-native-paper'
+import { Image, Keyboard, Platform, ScrollView, TouchableWithoutFeedback } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { Text } from 'react-native-paper'
+import { Avatar } from 'react-native-paper'
+import { View } from 'react-native'
+import { TextInput } from 'react-native-paper'
+import { Button } from 'react-native-paper'
+import { mdTheme } from '../shared/styles'
+import * as storage from '../shared/storage'
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native'
+import Message from '../components/Message'
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
+import * as Clipboard from 'expo-clipboard'
+import { Audio } from 'expo-av'
 
 
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical'
 
 let defaultConfirmDeletingDialogState = {
   item: { id: 114514 },

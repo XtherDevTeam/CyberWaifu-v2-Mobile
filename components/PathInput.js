@@ -1,7 +1,19 @@
 import React from 'react';
-import { View, Modal, StyleSheet, Platform, ScrollView, Dimensions } from 'react-native';
-import { Card, Title, Paragraph, Button, IconButton, withTheme, Text, Icon, DataTable, Dialog, List } from 'react-native-paper';
-import * as Api from '../shared/api'
+
+import {
+  Dimensions,
+  ScrollView,
+  View,
+} from 'react-native';
+import {
+  Button,
+  DataTable,
+  Dialog,
+  Icon,
+  Text,
+} from 'react-native-paper';
+
+import * as Api from '../shared/api';
 import { mdTheme } from '../shared/styles';
 
 function PathInput({ path, onSelect, acceptType, state, onDismiss, onError, dismissable, title, description }) {

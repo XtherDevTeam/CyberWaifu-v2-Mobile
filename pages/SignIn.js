@@ -1,17 +1,23 @@
 import * as React from 'react';
-import { Appbar, Icon, PaperProvider, Portal, withTheme } from 'react-native-paper';
-import { Banner } from 'react-native-paper';
-import { Image, Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Text } from 'react-native-paper';
-import { Avatar } from 'react-native-paper';
-import { View } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import { Button } from 'react-native-paper';
-import { mdTheme } from '../shared/styles';
-import * as storage from '../shared/storage';
+
+import {
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import {
+  Appbar,
+  Avatar,
+  Button,
+  Portal,
+  Text,
+  TextInput,
+  withTheme,
+} from 'react-native-paper';
+
 import Message from '../components/Message';
 import * as Remote from '../shared/remote';
+import * as storage from '../shared/storage';
 
 const SignIn = ({ navigation, route }) => {
   const serverAddressRef = React.useRef(null)

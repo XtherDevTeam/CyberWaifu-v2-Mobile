@@ -1,30 +1,30 @@
-import { StyleSheet, Text, View, Image, useColorScheme, AppRegistry } from 'react-native'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import styles, { mdTheme, mdThemeDark, mdThemeLight } from './shared/styles'
+import React from 'react';
+
+import { useColorScheme } from 'react-native';
 import {
-  MD3LightTheme,
-  MD3DarkTheme,
   adaptNavigationTheme,
   PaperProvider,
-  useTheme,
-  Icon,
 } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import {
+  createMaterialBottomTabNavigator,
+} from '@react-navigation/material-bottom-tabs';
 import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
-} from '@react-navigation/native'
-import React from 'react'
+  NavigationContainer,
+} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import * as storage from './shared/storage'
-import axios from 'axios'
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
-import About from './pages/About'
-import Home from './pages/Home'
-import SignIn from './pages/SignIn'
-import NewCharacter from './pages/NewCharacter'
-import Chatroom from './pages/Chatroom'
+import About from './pages/About';
+import Chatroom from './pages/Chatroom';
+import EditStickerSet from './pages/EditStickerSet';
+import Home from './pages/Home';
+import NewCharacter from './pages/NewCharacter';
+import SignIn from './pages/SignIn';
+import Sticker from './pages/Sticker';
+import { mdTheme } from './shared/styles';
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -40,6 +40,9 @@ function MainPage({ }) {
       <Tab.Screen name="Home" options={{
         tabBarIcon: "home"
       }} component={Home} />
+      <Tab.Screen name="Stickers" options={{
+        tabBarIcon: "sticker-emoji"
+      }} component={Sticker} />
       <Tab.Screen name="About" options={{
         tabBarIcon: "information-outline"
       }} component={About} />
@@ -75,6 +78,10 @@ export default function App() {
             />
             <Stack.Screen name="Chatroom" options={{ headerShown: false }} component={
               Chatroom
+            }
+            />
+            <Stack.Screen name="Edit Sticker Set" options={{ headerShown: false }} component={
+              EditStickerSet
             }
             />
           </Stack.Navigator>

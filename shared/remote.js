@@ -1,5 +1,6 @@
-import axios from "axios"
-import * as storage from './storage'
+import axios from 'axios';
+
+import * as storage from './storage';
 
 let serverUrl = ""
 
@@ -99,7 +100,7 @@ function attachmentDownload(attachmentId) {
 }
 
 function charAvatar(charId) {
-  console.log(`${serverUrl}/api/v1/char/${charId}/avatar`)
+  // console.log(`${serverUrl}/api/v1/char/${charId}/avatar`)
   return `${serverUrl}/api/v1/char/${charId}/avatar`
 }
 
@@ -116,9 +117,66 @@ function charNew(charName, charPrompt, pastMemories, exampleChats) {
   })
 }
 
-export {
-  checkIfLoggedIn, checkIfInitialized, signIn, refreshServerUrl, initialize,
-  characterList, chatEstablish, chatMessage, chatTerminate,
-  attachmentUploadAudio, attachmentUploadImage, attachmentDownload,
-  charNew, charAvatar, charHistory, getUserName
+function getAvatar() {
+  return `${serverUrl}/api/v1/avatar`
 }
+
+function createStickerSet(setName) {
+  return axios.post(`${serverUrl}/api/v1/sticker/create_set`, { setName })
+}
+
+function deleteStickerSet(setId) {
+  return axios.post(`${serverUrl}/api/v1/sticker/delete_set`, { setId })
+}
+
+function addStickerToSet(setId, stickerName) {
+  return `${serverUrl}/api/v1/sticker/add?setId=${encodeURIComponent(setId)}&stickerName=${encodeURIComponent(stickerName)}`
+}
+
+function deleteSticker(stickerId) {
+  return axios.post(`${serverUrl}/api/v1/sticker/delete`, { stickerId })
+}
+
+function renameStickerSet(setId, newSetName) {
+  return axios.post(`${serverUrl}/api/v1/sticker/rename_set`, { setId, newSetName })
+}
+
+function stickerGet(setId, name) {
+  return `${serverUrl}/api/v1/sticker/get?setId=${encodeURIComponent(setId)}&name=${encodeURIComponent(name)}`
+}
+
+function stickerSetList() {
+  return axios.post(`${serverUrl}/api/v1/sticker/set_list`)
+}
+
+function stickerList(setId) {
+  return axios.post(`${serverUrl}/api/v1/sticker/list`, { setId })
+}
+
+export {
+  addStickerToSet,
+  attachmentDownload,
+  attachmentUploadAudio,
+  attachmentUploadImage,
+  characterList,
+  charAvatar,
+  charHistory,
+  charNew,
+  chatEstablish,
+  chatMessage,
+  chatTerminate,
+  checkIfInitialized,
+  checkIfLoggedIn,
+  createStickerSet,
+  deleteSticker,
+  deleteStickerSet,
+  getAvatar,
+  getUserName,
+  initialize,
+  refreshServerUrl,
+  renameStickerSet,
+  signIn,
+  stickerGet,
+  stickerList,
+  stickerSetList,
+};

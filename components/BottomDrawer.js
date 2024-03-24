@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
-import { View, Modal, StyleSheet, Platform, ScrollView, SafeAreaView, Dimensions } from 'react-native';
-import { Card, Title, Paragraph, Button, IconButton } from 'react-native-paper';
+import React from 'react';
+
+import {
+  Dimensions,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {
+  Card,
+  IconButton,
+} from 'react-native-paper';
 
 const BottomDrawer = ({ drawerTitle, onClose, children, state }) => {
   return (

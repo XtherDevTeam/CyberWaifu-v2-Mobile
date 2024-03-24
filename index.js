@@ -1,9 +1,11 @@
-import { registerRootComponent } from 'expo';
-import App from './App';
 import 'react-native-gesture-handler';
 
-import { CacheManager } from '@georstat/react-native-image-cache';
+import { registerRootComponent } from 'expo';
 import { Dirs } from 'react-native-file-access';
+
+import { CacheManager } from '@georstat/react-native-image-cache';
+
+import App from './App';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -14,5 +16,7 @@ CacheManager.config = {
   sourceAnimationDuration: 1000,
   thumbnailAnimationDuration: 1000,
 };
+
+CacheManager.clearCache()
 
 registerRootComponent(App)

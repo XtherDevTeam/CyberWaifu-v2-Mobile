@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 function setItem(k, v, cb) {
   
   AsyncStorage.setItem(k, JSON.stringify(v), (error, result) => {
@@ -32,4 +31,4 @@ function inquireItem(k, cb) {
   })
 }
 
-export {setItem, removeItem, inquireItem}
+export { inquireItem, removeItem, setItem };
