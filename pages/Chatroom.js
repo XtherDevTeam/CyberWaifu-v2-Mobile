@@ -49,6 +49,8 @@ const Chatroom = ({ navigation, route }) => {
   const [messageText, setMessageText] = React.useState("")
   const [charName, setCharName] = React.useState('')
   const [charId, setCharId] = React.useState(0)
+  const [useStickerSet, setUseStickerSet] = React.useState(0)
+  const [availableStickers, setAvailableStickers] = React.useState([])
   const chatImages = React.useRef([])
   const chatHistory = React.useRef([])
   const [chatHistoryView, setChatHistoryView] = React.useState([])
@@ -59,11 +61,27 @@ const Chatroom = ({ navigation, route }) => {
   useFocusEffect(React.useCallback(() => {
     setCharName(route.params.charName)
     setCharId(route.params.charId)
+    Remote.getCharacterInfo(route.params.charId).then(r => {
+      if (r.data.status) {
+        setUseStickerSet(r.data.data.emotionPack)
+      }
+    })
     Remote.getUserName().then(r => {
       setSessionUsername(r)
     })
     loadChatHistory()
   }, []))
+
+  React.useEffect(() => {
+    if (useStickerSet !== 0) {
+      Remote.stickerList(useStickerSet).then(r => {
+        if (r.data.status) {
+          console.log(r.data.data.map(r => r.name))
+          setAvailableStickers(r.data.data.map(r => r.name))
+        }
+      })
+    }
+  }, [useStickerSet])
 
   React.useEffect(() => {
     let r = []
@@ -95,8 +113,9 @@ const Chatroom = ({ navigation, route }) => {
         if (k.role === 'model') {
           timeout += k.text.length * 0.01
         }
+        n.push(k)
         setTimeout(() => {
-          n.push(k)
+          console.log('setting history view', n)
           setChatHistoryView(n)
         }, timeout)
       })
@@ -148,12 +167,24 @@ const Chatroom = ({ navigation, route }) => {
     }
   }
 
+  function buildTextView(availableStickers, text) {
+    return Remote.splitEmotionAndText(availableStickers, text).map((v, k) => {
+      if (v.startsWith('text:')) {
+        return <Text key={k}>{v.substring(5)}</Text>
+      } else {
+        return <Text key={k}><CachedImage style={{ width: 48, height: 48, borderRadius: 24, display: '' }} imageStyle={{ borderRadius: 24 }} source={Remote.stickerGet(useStickerSet, v.substring('4'))} /></Text>
+        // return <Text key={k}>{v.substring(4)}</Text>
+      }
+    })
+  }
+
   return (
     <PaperProvider theme={mdTheme()}>
       <>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
           <Appbar.Content title={charName}></Appbar.Content>
+          <Appbar.Action icon={'book-edit'} onPress={() => navigation.navigate('Edit Character', { ...route.params })}></Appbar.Action>
         </Appbar.Header>
         <TouchableWithoutFeedback onPress={() => {
 
@@ -177,7 +208,7 @@ const Chatroom = ({ navigation, route }) => {
                         <Text style={{ marginBottom: 5, textAlign: 'left' }}>{route.params.charName}</Text>
                         <Card style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
                           <Card.Content>
-                            <Text>{v.text}</Text>
+                            <Text>{buildTextView(availableStickers, v.text)}</Text>
                           </Card.Content>
                         </Card>
                       </View>
@@ -189,11 +220,11 @@ const Chatroom = ({ navigation, route }) => {
                         <Text style={{ marginBottom: 5, textAlign: 'right' }}>{sessionUsername}</Text>
                         <Card style={{ alignSelf: 'flex-end', minWidth: 76, maxWidth: '85%' }}>
                           <Card.Content>
-                            <Text>{v.text}</Text>
+                            <Text>{buildTextView(availableStickers, v.text)}</Text>
                           </Card.Content>
                         </Card>
                       </View>
-                      <Avatar.Image style={{ marginLeft: 10 }} />
+                      <Avatar.Image style={{ marginLeft: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.getAvatar()} />}></Avatar.Image>
                     </>
                   )}
                 </View>
@@ -211,7 +242,7 @@ const Chatroom = ({ navigation, route }) => {
               </View>
               <View style={{ flexDirection: 'row' }}>
                 {chatImagesView.map((v, k) => <>
-                  <TouchableRipple onPress={() => console.log('Pressed')}><AvatarImage
+                  <TouchableRipple onPress={() => console.log('Pressed')}><Avatar.Image
                     style={{ margin: 5 }}
                     key={k}
                     source={{ uri: v }}

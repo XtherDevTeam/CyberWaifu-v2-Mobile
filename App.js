@@ -19,6 +19,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import About from './pages/About';
 import Chatroom from './pages/Chatroom';
+import EditCharacter from './pages/EditCharacter';
 import EditStickerSet from './pages/EditStickerSet';
 import Home from './pages/Home';
 import NewCharacter from './pages/NewCharacter';
@@ -82,6 +83,10 @@ export default function App() {
             />
             <Stack.Screen name="Edit Sticker Set" options={{ headerShown: false }} component={
               EditStickerSet
+            }
+            />
+            <Stack.Screen name="Edit Character" options={{ headerShown: false }} component={
+              EditCharacter
             }
             />
           </Stack.Navigator>

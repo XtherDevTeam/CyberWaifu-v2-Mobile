@@ -108,9 +108,10 @@ function charHistory(charId, offset = 0) {
   return axios.post(`${serverUrl}/api/v1/char/${charId}/history/${offset}`)
 }
 
-function charNew(charName, charPrompt, pastMemories, exampleChats) {
+function charNew(charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
   return axios.post(`${serverUrl}/api/v1/char/new`, {
     charName,
+    useStickerSet,
     charPrompt,
     pastMemories,
     exampleChats
@@ -153,6 +154,48 @@ function stickerList(setId) {
   return axios.post(`${serverUrl}/api/v1/sticker/list`, { setId })
 }
 
+function editCharacter(id, charName, charPrompt, pastMemories, exampleChats, useStickerSet) {
+  return axios.post(`${serverUrl}/api/v1/char/${id}/edit`, {
+    useStickerSet,
+    charName,
+    charPrompt,
+    pastMemories,
+    exampleChats,
+  })
+}
+
+function getCharacterInfo(id) {
+  return axios.post(`${serverUrl}/api/v1/char/${id}/info`)
+}
+
+function getStickerSetInfo(setId) {
+  return axios.post(`${serverUrl}/api/v1/sticker/set_info`, {setId})
+}
+
+function splitEmotionAndText(emotions, text) {
+  // Construct the regular expression pattern
+  const pattern = new RegExp("\\((?:" + emotions.join("|") + ")\\)", "g");
+
+  // Split the text using the pattern
+  const splited = text.split(pattern);
+
+  // Create the result array
+  const result = [];
+  let resultIndex = 0;
+
+  // Iterate through matches and add to the result
+  for (const match of text.matchAll(pattern)) {
+    result.push(`text:${splited[resultIndex]}`);
+    result.push(`emo:${match[0].substring(1, match[0].length - 1)}`); // Extract the emotion without parentheses
+    resultIndex++;
+  }
+  if (resultIndex < splited.length) {
+    result.push(`text:${splited[resultIndex]}`);
+  }
+
+  return result;
+}
+
 export {
   addStickerToSet,
   attachmentDownload,
@@ -170,12 +213,16 @@ export {
   createStickerSet,
   deleteSticker,
   deleteStickerSet,
+  editCharacter,
   getAvatar,
+  getCharacterInfo,
+  getStickerSetInfo,
   getUserName,
   initialize,
   refreshServerUrl,
   renameStickerSet,
   signIn,
+  splitEmotionAndText,
   stickerGet,
   stickerList,
   stickerSetList,

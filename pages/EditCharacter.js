@@ -2,13 +2,11 @@ import * as React from 'react';
 
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {
-  adaptNavigationTheme,
   Appbar,
   Button,
   PaperProvider,
@@ -18,32 +16,22 @@ import {
   withTheme,
 } from 'react-native-paper';
 
-import {
-  DarkTheme as NavigationDarkTheme,
-  DefaultTheme as NavigationDefaultTheme,
-  useFocusEffect,
-} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import Message from '../components/Message';
 import StickerSetSelector from '../components/StickerSetSelector';
 import * as Remote from '../shared/remote';
 import { mdTheme } from '../shared/styles';
 
-const { LightTheme, DarkTheme } = adaptNavigationTheme({
-  reactNavigationLight: NavigationDefaultTheme,
-  reactNavigationDark: NavigationDarkTheme
-});
-
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical'
-
-const NewCharacter = ({ navigation, route }) => {
+const EditCharacter = ({ navigation, route }) => {
   const [messageState, setMessageState] = React.useState(false)
   const [messageText, setMessageText] = React.useState("")
-  const [charName, setCharName] = React.useState("")
+  const [charId, setCharId] = React.useState(route.params.charId)
+  const [charName, setCharName] = React.useState(route.params.charName)
   const [charPrompt, setCharPrompt] = React.useState("")
   const [pastMemories, setPastMemories] = React.useState("")
   const [exampleChats, setExampleChats] = React.useState("")
-  const [useStickerSet, setUseStickerSet] = React.useState({})
+  const [useStickerSet, setUseStickerSet] = React.useState(null)
 
   const charNameInputRef = React.useRef(null)
   const charPromptInputRef = React.useRef(null)
@@ -52,18 +40,37 @@ const NewCharacter = ({ navigation, route }) => {
   const scrollViewRef = React.useRef(null)
 
   useFocusEffect(React.useCallback(() => {
+    Remote.getCharacterInfo(charId).then(r => {
+      if (r.data.status) {
+        setCharName(r.data.data.charName)
+        setCharPrompt(r.data.data.charPrompt)
+        setPastMemories(r.data.data.pastMemories)
+        setExampleChats(r.data.data.exampleChats)
+        Remote.getStickerSetInfo(r.data.data.emotionPack).then(r => {
+          if (r.status) {
+            setUseStickerSet(r.data.data)
+          }
+        })
+      } else {
+        setMessageText(`Unable to get character info: ${r.data.data}`)
+        setMessageState(true)
+      }
+    }).catch(r => {
+      setMessageText(`Unable to get character info: NetworkError`)
+      setMessageState(true)
+    })
   }, []))
 
-  function onSubmit(charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
-    Remote.charNew(charName, useStickerSet, charPrompt, pastMemories, exampleChats).then(r => {
+  function onSubmit(charId, charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
+    Remote.editCharacter(charId, charName, charPrompt, pastMemories, exampleChats, useStickerSet).then(r => {
       if (r.data.status) {
         navigation.goBack()
       } else {
-        setMessageText(`Unable to create character: ${r.data.data}`)
+        setMessageText(`Unable to edit character: ${r.data.data}`)
         setMessageState(true)
       }
     }).catch(e => {
-      setMessageText(`Unable to create character: ${e}`)
+      setMessageText(`Unable to edit character: ${e}`)
       setMessageState(true)
     })
   }
@@ -73,7 +80,7 @@ const NewCharacter = ({ navigation, route }) => {
       <>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
-          <Appbar.Content title={"New Character"}></Appbar.Content>
+          <Appbar.Content title={"Edit Character"}></Appbar.Content>
         </Appbar.Header>
         <KeyboardAvoidingView behavior='padding' style={{ height: '100%' }}>
           <TouchableWithoutFeedback onPress={() => {
@@ -81,13 +88,13 @@ const NewCharacter = ({ navigation, route }) => {
             charPromptInputRef.current?.blur()
             exampleChatsInputRef.current?.blur()
             pastMemoriesInputRef.current?.blur()
-            setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100)
+            scrollViewRef.current?.scrollToEnd({ animated: true })
           }} accessible={false} style={{ height: '100%' }}>
             <>
               <ScrollView ref={scrollViewRef}>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                   <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center' }}>
-                    You can edit the new character's profile here.
+                    You can edit {charName}'s profile here.
                   </Text>
 
                   <TextInput
@@ -106,7 +113,8 @@ const NewCharacter = ({ navigation, route }) => {
                   <StickerSetSelector
                     style={{ width: '90%', marginTop: 20 }}
                     onChange={v => setUseStickerSet(v)}
-                    onErr={() => {
+                    defaultValue={useStickerSet}
+                    onErr={v => {
                       setMessageText(`Unable to select sticker set: ${v}`)
                       setMessageState(true)
                     }}></StickerSetSelector>
@@ -153,9 +161,10 @@ const NewCharacter = ({ navigation, route }) => {
                     onChangeText={(v) => setExampleChats(v)}
                   />
 
+
                   <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                    onSubmit(charName, useStickerSet.id, charPrompt, pastMemories, exampleChats)
-                  }}>Create</Button>
+                    onSubmit(charId, charName, useStickerSet.id, charPrompt, pastMemories, exampleChats)
+                  }}>Edit</Button>
                 </View>
 
               </ScrollView>
@@ -171,4 +180,4 @@ const NewCharacter = ({ navigation, route }) => {
 };
 
 
-export default withTheme(NewCharacter);
+export default withTheme(EditCharacter);
