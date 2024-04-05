@@ -172,6 +172,10 @@ function getStickerSetInfo(setId) {
   return axios.post(`${serverUrl}/api/v1/sticker/set_info`, {setId})
 }
 
+function stt() {
+  return `${serverUrl}/api/v1/stt`
+}
+
 function splitEmotionAndText(emotions, text) {
   // Construct the regular expression pattern
   const pattern = new RegExp("\\((?:" + emotions.join("|") + ")\\)", "g");
@@ -226,4 +230,5 @@ export {
   stickerGet,
   stickerList,
   stickerSetList,
+  stt,
 };

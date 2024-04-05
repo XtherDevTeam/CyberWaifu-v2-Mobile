@@ -1,8 +1,15 @@
 import * as React from 'react';
 
+import { Audio } from 'expo-av';
+import * as fs from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 // import AvatarImage from '../shared/AvatarImage'
 import {
+  Animated,
+  Dimensions,
+  Image,
   KeyboardAvoidingView,
+  LayoutAnimation,
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
@@ -12,10 +19,14 @@ import {
   adaptNavigationTheme,
   Appbar,
   Avatar,
+  Button,
   Card,
+  Icon,
   IconButton,
+  List,
   PaperProvider,
   Portal,
+  SegmentedButtons,
   Text,
   TextInput,
   TouchableRipple,
@@ -42,21 +53,36 @@ const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical'
 
 const Chatroom = ({ navigation, route }) => {
   const theme = mdTheme()
+  const audioRecordingRef = React.useRef(null)
+  const [audioRecordingStatus, setAudioRecordingStatus] = React.useState(false)
+  const [messageAreaPadding, setMessageAreaPadding] = React.useState(56)
   const chatHistoryViewRef = React.useRef(null)
   const charHistoryOffset = React.useRef(0)
   const chatSession = React.useRef(null)
+  const chatMessageInputRef = React.useRef(null)
   const [messageState, setMessageState] = React.useState(false)
   const [messageText, setMessageText] = React.useState("")
   const [charName, setCharName] = React.useState('')
   const [charId, setCharId] = React.useState(0)
   const [useStickerSet, setUseStickerSet] = React.useState(0)
   const [availableStickers, setAvailableStickers] = React.useState([])
+
   const chatImages = React.useRef([])
   const chatHistory = React.useRef([])
   const [chatHistoryView, setChatHistoryView] = React.useState([])
   const [chatImagesView, setChatImagesView] = React.useState([])
   const [chatMessageInput, setChatMessageInput] = React.useState("")
   const [sessionUsername, setSessionUsername] = React.useState('')
+  const [currentMenuTab, setCurrentMenuTab] = React.useState('stickers')
+  const [menuStatus, setMenuStatus] = React.useState(false)
+
+  function triggerAnimation() {
+    LayoutAnimation.configureNext({ ...LayoutAnimation.Presets.linear, duration: 100 })
+  }
+
+  React.useEffect(() => {
+    console.log(currentMenuTab)
+  }, [currentMenuTab])
 
   useFocusEffect(React.useCallback(() => {
     setCharName(route.params.charName)
@@ -76,21 +102,36 @@ const Chatroom = ({ navigation, route }) => {
     if (useStickerSet !== 0) {
       Remote.stickerList(useStickerSet).then(r => {
         if (r.data.status) {
-          console.log(r.data.data.map(r => r.name))
-          setAvailableStickers(r.data.data.map(r => r.name))
+          console.log(r.data.data)
+          setAvailableStickers(r.data.data)
         }
       })
     }
   }, [useStickerSet])
 
   React.useEffect(() => {
+    triggerAnimation()
+  }, [chatImagesView])
+
+  function updateChatImages(uri) {
+    chatImages.current.push(uri)
     let r = []
     for (let i = 0; i < chatImages.current.length; i++) {
       // uploaded attachment url
       r.push(chatImages.current[i])
     }
     setChatImagesView(r)
-  }, [chatImages])
+  }
+
+  function removeChatImages(index) {
+    chatImages.current.splice(index, 1)
+    let r = []
+    for (let i = 0; i < chatImages.current.length; i++) {
+      // uploaded attachment url
+      r.push(chatImages.current[i])
+    }
+    setChatImagesView(r)
+  }
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -187,10 +228,11 @@ const Chatroom = ({ navigation, route }) => {
           <Appbar.Action icon={'book-edit'} onPress={() => navigation.navigate('Edit Character', { ...route.params })}></Appbar.Action>
         </Appbar.Header>
         <TouchableWithoutFeedback onPress={() => {
-
+          triggerAnimation()
+          setMenuStatus(false)
         }} accessible={false}>
           <>
-            <ScrollView ref={chatHistoryViewRef} style={{ height: '100%', paddingHorizontal: 10, marginBottom: 56 }}>
+            <ScrollView ref={chatHistoryViewRef} style={{ height: '100%', paddingHorizontal: 10, paddingBottom: messageAreaPadding }}>
               {chatHistoryView.map((v, k) => (
                 <View
                   key={k}
@@ -208,7 +250,7 @@ const Chatroom = ({ navigation, route }) => {
                         <Text style={{ marginBottom: 5, textAlign: 'left' }}>{route.params.charName}</Text>
                         <Card style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
                           <Card.Content>
-                            <Text>{buildTextView(availableStickers, v.text)}</Text>
+                            <Text>{buildTextView(availableStickers.map(r => r.name), v.text)}</Text>
                           </Card.Content>
                         </Card>
                       </View>
@@ -220,7 +262,7 @@ const Chatroom = ({ navigation, route }) => {
                         <Text style={{ marginBottom: 5, textAlign: 'right' }}>{sessionUsername}</Text>
                         <Card style={{ alignSelf: 'flex-end', minWidth: 76, maxWidth: '85%' }}>
                           <Card.Content>
-                            <Text>{buildTextView(availableStickers, v.text)}</Text>
+                            <Text>{buildTextView(availableStickers.map(r => r.name), v.text)}</Text>
                           </Card.Content>
                         </Card>
                       </View>
@@ -230,25 +272,164 @@ const Chatroom = ({ navigation, route }) => {
                 </View>
               ))}
             </ScrollView>
-            <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'none'} style={{ width: '100%', bottom: 0, position: 'absolute', marginTop: 20, backgroundColor: mdTheme().colors.surfaceVariant }}>
+            <KeyboardAvoidingView onLayout={e => {
+              setMessageAreaPadding(e.nativeEvent.layout.height)
+            }} behavior={Platform.OS == 'ios' ? 'padding' : 'none'} style={{
+              width: '100%',
+              bottom: 0,
+              position: 'absolute',
+              marginTop: 20,
+              backgroundColor: mdTheme().colors.surfaceVariant
+            }}>
               <View style={{ flexDirection: 'row', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                <TextInput value={chatMessageInput} onFocus={() => chatHistoryViewRef.current?.scrollToEnd({ animated: true })} onChangeText={v => { setChatMessageInput(v) }} mode='flat' style={{ flex: 16 }} label={'Type messages'}></TextInput>
+                <TextInput ref={chatMessageInputRef} value={chatMessageInput} onFocus={() => {
+                  setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({ animated: true }), 100)
+                  triggerAnimation()
+                  setMenuStatus(false)
+                }} onChangeText={v => { setChatMessageInput(v) }} mode='flat' style={{ flex: 16 }} label={'Type messages'}></TextInput>
                 <IconButton icon="send" style={{ flex: 2 }} onPress={() => {
                   buildMessageChainAndSend(chatMessageInput, chatImages.current)
                   setChatMessageInput('')
                   chatImages.current = []
                 }}></IconButton>
-                <IconButton icon="dots-vertical" style={{ flex: 2 }} onPress={() => { }}></IconButton>
+                <IconButton icon="dots-vertical" style={{ flex: 2 }} onPress={() => {
+                  if (menuStatus) {
+                    triggerAnimation()
+                    setMenuStatus(false)
+                  } else {
+                    chatMessageInputRef.current?.blur()
+                    triggerAnimation()
+                    setMenuStatus(true)
+                  }
+                }}></IconButton>
               </View>
               <View style={{ flexDirection: 'row' }}>
                 {chatImagesView.map((v, k) => <>
-                  <TouchableRipple onPress={() => console.log('Pressed')}><Avatar.Image
-                    style={{ margin: 5 }}
+                  <TouchableRipple onPress={() => removeChatImages(k)}><Image
                     key={k}
                     source={{ uri: v }}
-                    size={48}
+                    style={{ width: 48, height: 48, margin: 5, borderRadius: 12 }}
+                    imageStyle={{ borderRadius: 12 }}
                   /></TouchableRipple></>)}
               </View>
+              {menuStatus && <Animated.View style={{ height: Dimensions.get('window').height * 0.25 }}>
+                {currentMenuTab == 'stickers' && <ScrollView style={{ height: '100%', paddingHorizontal: 10 }}>
+                  {availableStickers.map(r => <List.Item
+                    key={r.id}
+                    left={() => <CachedImage style={{ width: 48, height: 48, borderRadius: 24, display: '' }} imageStyle={{ borderRadius: 24 }} source={Remote.stickerGet(useStickerSet, r.name)} />}
+                    title={r.name}
+                    onPress={() => {
+                      setChatMessageInput(chatMessageInput + `(${r.name})`)
+                    }}
+                  >
+                  </List.Item>)}
+                </ScrollView>}
+
+                {currentMenuTab == 'audio' && <View style={{ height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                  <IconButton
+                    icon="microphone"
+                    mode='contained'
+                    size={56}
+                    onTouchStart={(e) => {
+                      Audio.requestPermissionsAsync().then(r => {
+                        if (r.granted) {
+                          (async () => {
+                            await Audio.setAudioModeAsync({
+                              allowsRecordingIOS: true,
+                              playsInSilentModeIOS: true,
+                            });
+                            audioRecordingRef.current = new Audio.Recording()
+                            await audioRecordingRef.current.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY)
+                            await audioRecordingRef.current.startAsync()
+                            setAudioRecordingStatus(true)
+                          })()
+                        }
+                      })
+                    }}
+                    onTouchEnd={(e) => {
+                      (async () => {
+                        await audioRecordingRef.current.stopAndUnloadAsync()
+                        await Audio.setAudioModeAsync({ allowsRecordingIOS: false })
+                        setAudioRecordingStatus(false)
+                        console.log(audioRecordingRef.current.getURI())
+                        fs.uploadAsync(
+                          Remote.stt(),
+                          audioRecordingRef.current.getURI(),
+                          { httpMethod: 'POST', uploadType: fs.FileSystemUploadType.MULTIPART }).then(r => {
+                            if (r.status == 200) {
+                              data = JSON.parse(r.body)
+                              if (data.status) {
+                                setChatMessageInput(chatMessageInput + data.data)
+                              } else {
+                                setMessageText(`Unable to invoke STT service: ${data.data}`)
+                                setMessageState(true)
+                              }
+                            } else {
+                              setMessageText(`Unable to invoke STT service: NetworkError`)
+                              setMessageState(true)
+                            }
+                          })
+                      })()
+                    }}
+                  />
+                  {audioRecordingStatus && <Text variant='bodyMedium' style={{ marginTop: 10 }}>
+                    Recording...
+                  </Text>}
+                  {!audioRecordingStatus && <Text variant='bodyMedium' style={{ marginTop: 10 }}>
+                    Press to start
+                  </Text>}
+                </View>}
+                {currentMenuTab == 'image' && <View style={{ height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                  <Button mode='contained' style={{ width: '75%', marginTop: 20 }} onPress={() => {
+                    ImagePicker.launchImageLibraryAsync({ allowsMultipleSelection: true }).then(r => {
+                      if (!r.canceled) {
+                        r.assets.forEach(v => {
+                          console.log('a', v)
+                          updateChatImages(v.uri)
+                        })
+                      }
+                    })
+                  }}><Icon source='file-image-plus' color={theme.colors.primaryContainer}></Icon> Choose a image...</Button>
+                  <Button mode='contained' style={{ width: '75%', marginTop: 20 }} onPress={() => {
+                    ImagePicker.requestCameraPermissionsAsync().then(r => {
+                      if (r.granted) {
+                        ImagePicker.launchCameraAsync().then(r => {
+                          if (!r.canceled) {
+                            r.assets.forEach(v => {
+                              console.log('a', v)
+                              updateChatImages(v.uri)
+                            })
+                          }
+                        })
+                      }
+                    })
+                  }}><Icon source='camera' color={theme.colors.primaryContainer}></Icon> Or shoot one!</Button>
+                </View>}
+              </Animated.View>}
+              {menuStatus && <View style={{ marginBottom: 20 }}>
+                <SegmentedButtons
+                  style={{ paddingHorizontal: 10 }}
+                  value={currentMenuTab}
+                  onValueChange={v => setCurrentMenuTab(v)}
+                  buttons={[
+                    {
+                      value: 'stickers',
+                      label: 'Stickers',
+                      icon: 'sticker-emoji'
+                    },
+                    {
+                      value: 'audio',
+                      label: 'Audio',
+                      icon: 'microphone'
+                    },
+                    {
+                      value: 'image',
+                      label: 'Image',
+                      icon: 'camera'
+                    },
+                  ]}
+                />
+              </View>}
             </KeyboardAvoidingView>
             <Portal>
               <Message timeout={5000} style={{ marginBottom: 64 }} state={messageState} onStateChange={() => { setMessageState(false) }} icon="alert-circle" text={messageText} />
