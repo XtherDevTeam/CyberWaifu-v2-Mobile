@@ -1,6 +1,9 @@
 import * as React from 'react';
 
+import * as fs from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import {
+  Image,
   KeyboardAvoidingView,
   ScrollView,
   TouchableWithoutFeedback,
@@ -9,6 +12,7 @@ import {
 import {
   Appbar,
   Button,
+  Icon,
   PaperProvider,
   Portal,
   Text,
@@ -21,6 +25,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Message from '../components/Message';
 import StickerSetSelector from '../components/StickerSetSelector';
 import * as Remote from '../shared/remote';
+import * as storage from '../shared/storage';
 import { mdTheme } from '../shared/styles';
 
 const EditCharacter = ({ navigation, route }) => {
@@ -29,6 +34,7 @@ const EditCharacter = ({ navigation, route }) => {
   const [charId, setCharId] = React.useState(route.params.charId)
   const [charName, setCharName] = React.useState(route.params.charName)
   const [charPrompt, setCharPrompt] = React.useState("")
+  const [charAvatarUrl, setCharAvatarUrl] = React.useState("")
   const [pastMemories, setPastMemories] = React.useState("")
   const [exampleChats, setExampleChats] = React.useState("")
   const [useStickerSet, setUseStickerSet] = React.useState(null)
@@ -42,6 +48,7 @@ const EditCharacter = ({ navigation, route }) => {
   useFocusEffect(React.useCallback(() => {
     Remote.getCharacterInfo(charId).then(r => {
       if (r.data.status) {
+        setCharAvatarUrl(Remote.charAvatar(r.data.data.id))
         setCharName(r.data.data.charName)
         setCharPrompt(r.data.data.charPrompt)
         setPastMemories(r.data.data.pastMemories)
@@ -60,6 +67,26 @@ const EditCharacter = ({ navigation, route }) => {
       setMessageState(true)
     })
   }, []))
+
+  function onUpload(v) {
+    fs.uploadAsync(Remote.updateCharacterAvatar(charId), v, { httpMethod: 'POST', uploadType: fs.FileSystemUploadType.MULTIPART }).then(r => {
+      if (r.status == 200) {
+        data = JSON.parse(r.body)
+        if (data.status) {
+          setCharAvatarUrl(v)
+          storage.clearImageCache()
+          setMessageText(`Character avatar updated.`)
+          setMessageState(true)
+        } else {
+          setMessageText(`Unable to update avatar: ${data.data}`)
+          setMessageState(true)
+        }
+      } else {
+        setMessageText(`Unable to update avatar: NetworkError`)
+        setMessageState(true)
+      }
+    })
+  }
 
   function onSubmit(charId, charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
     Remote.editCharacter(charId, charName, charPrompt, pastMemories, exampleChats, useStickerSet).then(r => {
@@ -93,9 +120,17 @@ const EditCharacter = ({ navigation, route }) => {
             <>
               <ScrollView ref={scrollViewRef}>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center' }}>
-                    You can edit {charName}'s profile here.
-                  </Text>
+                  <Image
+                    style={{ width: 64, height: 64, borderRadius: 32, marginTop: 20, alignSelf: 'center' }}
+                    imageStyle={{ borderRadius: 32 }}
+                    source={{ uri: charAvatarUrl }} />
+                  <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
+                    ImagePicker.launchImageLibraryAsync().then(r => {
+                      if (!r.canceled) {
+                        r.assets.forEach(v => onUpload(v.uri))
+                      }
+                    })
+                  }}><Icon source={'file-image-plus'}/> Upload a new one</Button>
 
                   <TextInput
                     label="Character Name"

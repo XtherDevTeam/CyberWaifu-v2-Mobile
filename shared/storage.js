@@ -1,3 +1,4 @@
+import { CacheManager } from '@georstat/react-native-image-cache';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function setItem(k, v, cb) {
@@ -31,4 +32,8 @@ function inquireItem(k, cb) {
   })
 }
 
-export { inquireItem, removeItem, setItem };
+function clearImageCache() {
+  CacheManager.clearCache()
+}
+
+export { clearImageCache, inquireItem, removeItem, setItem };

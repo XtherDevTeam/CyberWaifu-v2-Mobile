@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import ImageView from 'react-native-image-viewing';
 import {
   adaptNavigationTheme,
   Appbar,
@@ -53,6 +54,7 @@ const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical'
 
 const Chatroom = ({ navigation, route }) => {
   const theme = mdTheme()
+  const chatMessageInputCursorPosition = React.useRef(0)
   const audioRecordingRef = React.useRef(null)
   const [audioRecordingStatus, setAudioRecordingStatus] = React.useState(false)
   const [messageAreaPadding, setMessageAreaPadding] = React.useState(56)
@@ -76,8 +78,19 @@ const Chatroom = ({ navigation, route }) => {
   const [currentMenuTab, setCurrentMenuTab] = React.useState('stickers')
   const [menuStatus, setMenuStatus] = React.useState(false)
 
+  const [imagePreviewVisibility, setImagePreviewVisibility] = React.useState(false)
+  const [previewImage, setPreviewImage] = React.useState('')
+
   function triggerAnimation() {
     LayoutAnimation.configureNext({ ...LayoutAnimation.Presets.linear, duration: 100 })
+  }
+
+  function insertIntoChatInput(newText) {
+    console.log(chatMessageInputRef.current._lastNativeSelection)
+    const currentPosition = chatMessageInputCursorPosition.current
+
+    const updatedText = chatMessageInput.slice(0, currentPosition) + newText + chatMessageInput.slice(currentPosition)
+    setChatMessageInput(updatedText)
   }
 
   React.useEffect(() => {
@@ -85,6 +98,7 @@ const Chatroom = ({ navigation, route }) => {
   }, [currentMenuTab])
 
   useFocusEffect(React.useCallback(() => {
+    charHistoryOffset.current = 0
     setCharName(route.params.charName)
     setCharId(route.params.charId)
     Remote.getCharacterInfo(route.params.charId).then(r => {
@@ -133,6 +147,11 @@ const Chatroom = ({ navigation, route }) => {
     setChatImagesView(r)
   }
 
+  function clearChatImages() {
+    chatImages.current = []
+    setChatImagesView([])
+  }
+
   React.useEffect(() => {
     setTimeout(() => {
       console.log('Scrolling')
@@ -143,7 +162,9 @@ const Chatroom = ({ navigation, route }) => {
   function receiveMessage(response, order = false) {
     if (order) {
       console.log('reversed order')
-      chatHistoryView.forEach(k => { response.push(k) })
+      chatHistoryView.forEach(k => {
+        response.push(k)
+      })
       setChatHistoryView(response)
     } else {
       let n = []
@@ -166,6 +187,7 @@ const Chatroom = ({ navigation, route }) => {
   function loadChatHistory() {
     Remote.charHistory(route.params.charId, charHistoryOffset.current++).then(r => {
       if (r.data.status) {
+        console.log(route.params.charId, r.data.data)
         receiveMessage(r.data.data, true)
       } else {
         setMessageText(`Failed to fetch chat history: ${r.data.data}`)
@@ -177,10 +199,32 @@ const Chatroom = ({ navigation, route }) => {
     })
   }
 
+  function uploadAllAttachment() {
+    return (async () => {
+      for (let i in chatImages.current) {
+        console.log('No messages?', chatImages.current[i])
+        let r = await fs.uploadAsync(Remote.attachmentUploadImage(), chatImages.current[i], { httpMethod: 'POST', uploadType: fs.FileSystemUploadType.MULTIPART })
+        if (r.status == 200) {
+          data = JSON.parse(r.body)
+          if (data.status) {
+            chatImages.current[i] = Remote.attachmentDownload(data.id)
+          } else {
+            throw data.data
+          }
+        } else {
+          throw 'NetworkError'
+        }
+      }
+    })()
+  }
+
   function buildMessageChainAndSend(text, images) {
     let msgChain = []
-    msgChain.push(text)
+    if (text.length !== 0) {
+      msgChain.push(text)
+    }
     images.map(v => { msgChain.push('image:' + v) })
+    clearChatImages()
     console.log("???不是我日志呢？")
     if (chatSession.current === null) {
       console.log("Establishing a new session")
@@ -232,7 +276,7 @@ const Chatroom = ({ navigation, route }) => {
           setMenuStatus(false)
         }} accessible={false}>
           <>
-            <ScrollView ref={chatHistoryViewRef} style={{ height: '100%', paddingHorizontal: 10, paddingBottom: messageAreaPadding }}>
+            <ScrollView ref={chatHistoryViewRef} style={{ height: '100%', paddingHorizontal: 10, marginBottom: messageAreaPadding }}>
               {chatHistoryView.map((v, k) => (
                 <View
                   key={k}
@@ -260,11 +304,19 @@ const Chatroom = ({ navigation, route }) => {
                     <>
                       <View style={{ flexDirection: 'column' }}>
                         <Text style={{ marginBottom: 5, textAlign: 'right' }}>{sessionUsername}</Text>
-                        <Card style={{ alignSelf: 'flex-end', minWidth: 76, maxWidth: '85%' }}>
-                          <Card.Content>
-                            <Text>{buildTextView(availableStickers.map(r => r.name), v.text)}</Text>
-                          </Card.Content>
-                        </Card>
+                        {v.type == 0 &&
+                          <Card style={{ alignSelf: 'flex-end', minWidth: 76, maxWidth: '85%' }}>
+                            <Card.Content>
+                              <Text>{buildTextView(availableStickers.map(r => r.name), v.text)}</Text>
+                            </Card.Content>
+                          </Card>}
+                        {v.type == 1 &&
+                          <TouchableRipple style={{ alignSelf: 'flex-end', width: 100, height: 100 }} onPress={() => {
+                            setPreviewImage(v.text)
+                            setImagePreviewVisibility(true)
+                          }}>
+                            <CachedImage style={{ flex: 1, padding: 10, borderRadius: 10 }} resizeMode="cover" imageStyle={{ borderRadius: 10 }} source={v.text} />
+                          </TouchableRipple>}
                       </View>
                       <Avatar.Image style={{ marginLeft: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.getAvatar()} />}></Avatar.Image>
                     </>
@@ -273,7 +325,9 @@ const Chatroom = ({ navigation, route }) => {
               ))}
             </ScrollView>
             <KeyboardAvoidingView onLayout={e => {
-              setMessageAreaPadding(e.nativeEvent.layout.height)
+              if (e.nativeEvent !== null) {
+                setMessageAreaPadding(e.nativeEvent.layout.height)
+              }
             }} behavior={Platform.OS == 'ios' ? 'padding' : 'none'} style={{
               width: '100%',
               bottom: 0,
@@ -286,10 +340,22 @@ const Chatroom = ({ navigation, route }) => {
                   setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({ animated: true }), 100)
                   triggerAnimation()
                   setMenuStatus(false)
-                }} onChangeText={v => { setChatMessageInput(v) }} mode='flat' style={{ flex: 16 }} label={'Type messages'}></TextInput>
+                }}
+                  onSelectionChange={(e) => {
+                    chatMessageInputCursorPosition.current = e.nativeEvent.selection.end + 1
+                  }}
+                  onChangeText={v => {
+                    setChatMessageInput(v)
+                  }} mode='flat' style={{ flex: 16 }} multiline={true} label={'Type messages'}></TextInput>
                 <IconButton icon="send" style={{ flex: 2 }} onPress={() => {
-                  buildMessageChainAndSend(chatMessageInput, chatImages.current)
-                  setChatMessageInput('')
+                  uploadAllAttachment().then(() => {
+                    buildMessageChainAndSend(chatMessageInput, chatImages.current)
+                    setChatMessageInput('')
+                  }).catch(r => {
+                    setMessageText(`Unable to upload attachments: ${r}`)
+                    setMessageState(true)
+                  })
+
                   chatImages.current = []
                 }}></IconButton>
                 <IconButton icon="dots-vertical" style={{ flex: 2 }} onPress={() => {
@@ -300,6 +366,7 @@ const Chatroom = ({ navigation, route }) => {
                     chatMessageInputRef.current?.blur()
                     triggerAnimation()
                     setMenuStatus(true)
+                    setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({animated: true}), 300)
                   }
                 }}></IconButton>
               </View>
@@ -319,7 +386,7 @@ const Chatroom = ({ navigation, route }) => {
                     left={() => <CachedImage style={{ width: 48, height: 48, borderRadius: 24, display: '' }} imageStyle={{ borderRadius: 24 }} source={Remote.stickerGet(useStickerSet, r.name)} />}
                     title={r.name}
                     onPress={() => {
-                      setChatMessageInput(chatMessageInput + `(${r.name})`)
+                      insertIntoChatInput(`(${r.name})`)
                     }}
                   >
                   </List.Item>)}
@@ -359,7 +426,7 @@ const Chatroom = ({ navigation, route }) => {
                             if (r.status == 200) {
                               data = JSON.parse(r.body)
                               if (data.status) {
-                                setChatMessageInput(chatMessageInput + data.data)
+                                insertIntoChatInput(data.data)
                               } else {
                                 setMessageText(`Unable to invoke STT service: ${data.data}`)
                                 setMessageState(true)
@@ -432,6 +499,7 @@ const Chatroom = ({ navigation, route }) => {
               </View>}
             </KeyboardAvoidingView>
             <Portal>
+              <ImageView visible={imagePreviewVisibility} images={[{uri: previewImage}]} imageIndex={0} onRequestClose={() => setImagePreviewVisibility(false)}></ImageView>
               <Message timeout={5000} style={{ marginBottom: 64 }} state={messageState} onStateChange={() => { setMessageState(false) }} icon="alert-circle" text={messageText} />
             </Portal>
           </>

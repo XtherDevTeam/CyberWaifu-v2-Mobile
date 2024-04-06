@@ -89,14 +89,12 @@ function attachmentUploadAudio(audioFile) {
   return axios.post(`${serverUrl}/api/v1/attachment/upload/audio`, formData)
 }
 
-function attachmentUploadImage(imageFile) {
-  const formData = new FormData()
-  formData.append('image_file', imageFile)
-  return axios.post(`${serverUrl}/api/v1/attachment/upload/image`, formData)
+function attachmentUploadImage() {
+  return `${serverUrl}/api/v1/attachment/upload/image`
 }
 
 function attachmentDownload(attachmentId) {
-  return axios.post(`${serverUrl}/api/v1/attachment/${attachmentId}`)
+  return `${serverUrl}/api/v1/attachment/${attachmentId}`
 }
 
 function charAvatar(charId) {
@@ -176,6 +174,14 @@ function stt() {
   return `${serverUrl}/api/v1/stt`
 }
 
+function updateAvatar() {
+  return `${serverUrl}/api/v1/avatar/update`
+}
+
+function updateCharacterAvatar(id) {
+  return `${serverUrl}/api/v1/char/${id}/avatar/update`
+}
+
 function splitEmotionAndText(emotions, text) {
   // Construct the regular expression pattern
   const pattern = new RegExp("\\((?:" + emotions.join("|") + ")\\)", "g");
@@ -231,4 +237,6 @@ export {
   stickerList,
   stickerSetList,
   stt,
+  updateAvatar,
+  updateCharacterAvatar,
 };

@@ -47,7 +47,7 @@ function StickerSetSelector({ defaultValue, onChange, onErr, style }) {
   }, [defaultValue])
 
   return <>
-    <TextInput ref={inputRef} value={value} onFocus={() => {
+    <TextInput ref={inputRef} label={'Sticker set'} value={value} onFocus={() => {
       inputRef.current?.blur()
       setStatus(true)
     }} style={{...style}}></TextInput>
