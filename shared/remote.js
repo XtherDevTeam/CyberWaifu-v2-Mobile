@@ -206,8 +206,56 @@ function splitEmotionAndText(emotions, text) {
   return result;
 }
 
+function createTTSService(name, description, url) {
+  return axios.post(`${serverUrl}/api/v1/tts/service/create`, {
+    name,
+    description,
+    url,
+  })
+}
+
+function addTTSReferenceAudio(serviceId, name, text, path, language) {
+  return axios.post(`${serverUrl}/api/v1/tts/ref_audio/add`, {
+    serviceId,
+    name,
+    text,
+    path,
+    language,
+  })
+}
+
+function deleteTTSReferenceAudio(id) {
+  return axios.post(`${serverUrl}/api/v1/tts/ref_audio/delete`, {
+    id,
+  })
+}
+
+function getTTSServiceList() {
+  return axios.post(`${serverUrl}/api/v1/tts/service/list`)
+}
+
+function getTTSServiceInfo(id) {
+  return axios.post(`${serverUrl}/api/v1/tts/service/${id}`)
+}
+
+function deleteTTSService(id) {
+  return axios.post(`${serverUrl}/api/v1/tts/service/delete`, {
+    id,
+  })
+}
+
+function updateTTSService(id, name, description, url) {
+  return axios.post(`${serverUrl}/api/v1/tts/service/update`, {
+    id,
+    name,
+    description,
+    url,
+  })
+}
+
 export {
   addStickerToSet,
+  addTTSReferenceAudio,
   attachmentDownload,
   attachmentUploadAudio,
   attachmentUploadImage,
@@ -221,12 +269,17 @@ export {
   checkIfInitialized,
   checkIfLoggedIn,
   createStickerSet,
+  createTTSService,
   deleteSticker,
   deleteStickerSet,
+  deleteTTSReferenceAudio,
+  deleteTTSService,
   editCharacter,
   getAvatar,
   getCharacterInfo,
   getStickerSetInfo,
+  getTTSServiceInfo,
+  getTTSServiceList,
   getUserName,
   initialize,
   refreshServerUrl,
@@ -239,4 +292,5 @@ export {
   stt,
   updateAvatar,
   updateCharacterAvatar,
+  updateTTSService,
 };

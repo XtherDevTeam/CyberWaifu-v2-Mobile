@@ -183,6 +183,7 @@ const EditStickerSet = ({ navigation, route }) => {
                     Available stickers ({availableStickers.length})
                   </Text>
                   {availableStickers.map((v, k) => <List.Item
+                    key={v.id}
                     left={() => <CachedImage key={k} style={{ width: 48, height: 48, borderRadius: 24, marginLeft: 10 }} imageStyle={{ borderRadius: 32 }} source={Remote.stickerGet(route.params.id, v.name)} />}
                     title={v.name}
                     right={() => <IconButton icon={'delete'} onPress={() => {

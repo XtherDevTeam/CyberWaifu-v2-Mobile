@@ -21,10 +21,12 @@ import About from './pages/About';
 import Chatroom from './pages/Chatroom';
 import EditCharacter from './pages/EditCharacter';
 import EditStickerSet from './pages/EditStickerSet';
+import EditTTSService from './pages/EditTTSService';
 import Home from './pages/Home';
 import NewCharacter from './pages/NewCharacter';
 import SignIn from './pages/SignIn';
 import Sticker from './pages/Sticker';
+import TTSService from './pages/TTSService';
 import { mdTheme } from './shared/styles';
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
@@ -44,9 +46,9 @@ function MainPage({ }) {
       <Tab.Screen name="Stickers" options={{
         tabBarIcon: "sticker-emoji"
       }} component={Sticker} />
-      <Tab.Screen name="About" options={{
-        tabBarIcon: "information-outline"
-      }} component={About} />
+      <Tab.Screen name="TTS Services" options={{
+        tabBarIcon: "microphone"
+      }} component={TTSService} />
     </Tab.Navigator>
   )
 }
@@ -87,6 +89,10 @@ export default function App() {
             />
             <Stack.Screen name="Edit Character" options={{ headerShown: false }} component={
               EditCharacter
+            }
+            />
+            <Stack.Screen name="Edit TTS Service" options={{ headerShown: false }} component={
+              EditTTSService
             }
             />
           </Stack.Navigator>

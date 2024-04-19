@@ -94,7 +94,7 @@ const Sticker = ({ navigation, route }) => {
         <TouchableWithoutFeedback onPress={() => { }} accessible={false}>
           <>
             {(stickerSetList === null || stickerSetList.length == 0) &&
-              <View style={{ alignItems: 'center', justifyContent: 'center', padding: 10 }}>
+              <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, padding: 10 }}>
                 <Text style={{ textAlign: 'center' }}>
                   Try to add a sticker set by pressing `+` button in Appbar
                 </Text>
