@@ -308,16 +308,19 @@ const Chatroom = ({ navigation, route }) => {
                     justifyContent: v.role === 'model' ? 'flex-start' : 'flex-end',
                   }}
                 >
-                  {v.role === 'model' && (
+                  {(v.role === 'model') && (
                     <>
                       <Avatar.Image style={{ marginRight: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.charAvatar(route.params.charId)} />}></Avatar.Image>
                       <View style={{ flexDirection: 'column' }}>
                         <Text style={{ marginBottom: 5, textAlign: 'left' }}>{route.params.charName}</Text>
-                        <Card style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
-                          <Card.Content>
-                            <Text>{buildTextView(availableStickers.map(r => r.name), v.text)}</Text>
-                          </Card.Content>
-                        </Card>
+                        {v.type == 0 &&
+                          <Card style={{ alignSelf: 'flex-start', maxWidth: '85%' }}>
+                            <Card.Content>
+                              <Text>{buildTextView(availableStickers.map(r => r.name), v.text)}</Text>
+                            </Card.Content>
+                          </Card>
+                        }
+                        {v.type == 2 && <Card style={{ alignSelf: 'flex-start', minWidth: 100, maxWidth: '85%' }}><AudioMessageView audioAttachment={v.text}></AudioMessageView></Card>}
                       </View>
                     </>
                   )}
