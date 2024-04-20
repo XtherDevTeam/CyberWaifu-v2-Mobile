@@ -24,6 +24,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import Message from '../components/Message';
 import StickerSetSelector from '../components/StickerSetSelector';
+import TTSServiceSelector from '../components/TTSServiceSelector';
 import * as Remote from '../shared/remote';
 import * as storage from '../shared/storage';
 import { mdTheme } from '../shared/styles';
@@ -38,6 +39,7 @@ const EditCharacter = ({ navigation, route }) => {
   const [pastMemories, setPastMemories] = React.useState("")
   const [exampleChats, setExampleChats] = React.useState("")
   const [useStickerSet, setUseStickerSet] = React.useState(null)
+  const [useTTSService, setUseTTSService] = React.useState(null)
 
   const charNameInputRef = React.useRef(null)
   const charPromptInputRef = React.useRef(null)
@@ -58,6 +60,19 @@ const EditCharacter = ({ navigation, route }) => {
             setUseStickerSet(r.data.data)
           }
         })
+        if (r.data.data.ttsServiceId !== 0) {
+          Remote.getTTSServiceInfo(r.data.data.ttsServiceId).then(r => {
+            if (r.status) {
+              setUseTTSService(r.data.data)
+            }
+          })
+        } else {
+          setUseTTSService({
+            id: 0,
+            name: "None",
+            description: "Do not use TTS service during conversation"
+          })
+        }
       } else {
         setMessageText(`Unable to get character info: ${r.data.data}`)
         setMessageState(true)
@@ -88,8 +103,8 @@ const EditCharacter = ({ navigation, route }) => {
     })
   }
 
-  function onSubmit(charId, charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
-    Remote.editCharacter(charId, charName, charPrompt, pastMemories, exampleChats, useStickerSet).then(r => {
+  function onSubmit(charId, charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats) {
+    Remote.editCharacter(charId, charName, charPrompt, pastMemories, exampleChats, useStickerSet, useTTSService).then(r => {
       if (r.data.status) {
         navigation.goBack()
       } else {
@@ -130,7 +145,7 @@ const EditCharacter = ({ navigation, route }) => {
                         r.assets.forEach(v => onUpload(v.uri))
                       }
                     })
-                  }}><Icon source={'file-image-plus'}/> Upload a new one</Button>
+                  }}><Icon source={'file-image-plus'} /> Upload a new one</Button>
 
                   <TextInput
                     label="Character Name"
@@ -140,6 +155,19 @@ const EditCharacter = ({ navigation, route }) => {
                     value={charName}
                     onChangeText={(v) => setCharName(v)}
                   />
+
+                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
+                    Choose the TTS Service for character to use during conversations.
+                  </Text>
+
+                  <TTSServiceSelector
+                    style={{ width: '90%', marginTop: 20 }}
+                    onChange={v => setUseTTSService(v)}
+                    defaultValue={useTTSService}
+                    onErr={v => {
+                      setMessageText(`Unable to select TTS service: ${v}`)
+                      setMessageState(true)
+                    }}></TTSServiceSelector>
 
                   <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
                     Choose the sticker set for character to use during conversations.
@@ -198,7 +226,7 @@ const EditCharacter = ({ navigation, route }) => {
 
 
                   <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                    onSubmit(charId, charName, useStickerSet.id, charPrompt, pastMemories, exampleChats)
+                    onSubmit(charId, charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
                   }}>Edit</Button>
                 </View>
 

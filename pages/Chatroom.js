@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   LayoutAnimation,
   Platform,
+  RefreshControl,
   ScrollView,
   TouchableWithoutFeedback,
   View,
@@ -41,6 +42,7 @@ import {
   useFocusEffect,
 } from '@react-navigation/native';
 
+import AudioMessageView from '../components/AudioMessageView';
 import Message from '../components/Message';
 import * as Remote from '../shared/remote';
 import { mdTheme } from '../shared/styles';
@@ -80,6 +82,9 @@ const Chatroom = ({ navigation, route }) => {
 
   const [imagePreviewVisibility, setImagePreviewVisibility] = React.useState(false)
   const [previewImage, setPreviewImage] = React.useState('')
+
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false)
 
   function triggerAnimation() {
     LayoutAnimation.configureNext({ ...LayoutAnimation.Presets.linear, duration: 100 })
@@ -153,10 +158,14 @@ const Chatroom = ({ navigation, route }) => {
   }
 
   React.useEffect(() => {
-    setTimeout(() => {
-      console.log('Scrolling')
-      chatHistoryViewRef.current?.scrollToEnd({ animated: true })
-    }, 100)
+    if (!isLoading) {
+      setTimeout(() => {
+        console.log('Scrolling')
+        chatHistoryViewRef.current?.scrollToEnd({ animated: true })
+      }, 100)
+    } else {
+      setIsLoading(false)
+    }
   }, [chatHistoryView])
 
   function receiveMessage(response, order = false) {
@@ -202,12 +211,11 @@ const Chatroom = ({ navigation, route }) => {
   function uploadAllAttachment() {
     return (async () => {
       for (let i in chatImages.current) {
-        console.log('No messages?', chatImages.current[i])
         let r = await fs.uploadAsync(Remote.attachmentUploadImage(), chatImages.current[i], { httpMethod: 'POST', uploadType: fs.FileSystemUploadType.MULTIPART })
         if (r.status == 200) {
           data = JSON.parse(r.body)
           if (data.status) {
-            chatImages.current[i] = Remote.attachmentDownload(data.id)
+            chatImages.current[i] = data.id
           } else {
             throw data.data
           }
@@ -218,16 +226,8 @@ const Chatroom = ({ navigation, route }) => {
     })()
   }
 
-  function buildMessageChainAndSend(text, images) {
-    let msgChain = []
-    if (text.length !== 0) {
-      msgChain.push(text)
-    }
-    images.map(v => { msgChain.push('image:' + v) })
-    clearChatImages()
-    console.log("???不是我日志呢？")
+  function sendMessageChain(msgChain) {
     if (chatSession.current === null) {
-      console.log("Establishing a new session")
       Remote.chatEstablish(charName, msgChain).then(r => {
         if (r.data.status) {
           console.log(r.data)
@@ -236,10 +236,8 @@ const Chatroom = ({ navigation, route }) => {
         }
       })
     } else {
-      console.log("In chatting")
       Remote.chatMessage(chatSession.current, msgChain).then(r => {
         if (r.data.status) {
-          console.log('?', r.data)
           receiveMessage(r.data.response)
         } else {
           setMessageText(`Failed to send message: ${r.data.data}`)
@@ -250,6 +248,22 @@ const Chatroom = ({ navigation, route }) => {
         setMessageState(true)
       })
     }
+  }
+
+  function sendAudio(attachmentId) {
+    let msgChain = [`audio:${attachmentId}`]
+    sendMessageChain(msgChain)
+  }
+
+  function buildMessageChainAndSend(text, images) {
+    let msgChain = []
+    if (text.length !== 0) {
+      msgChain.push(text)
+    }
+    images.map(v => { msgChain.push('image:' + v) })
+    clearChatImages()
+    console.log(msgChain)
+    sendMessageChain(msgChain)
   }
 
   function buildTextView(availableStickers, text) {
@@ -276,7 +290,14 @@ const Chatroom = ({ navigation, route }) => {
           setMenuStatus(false)
         }} accessible={false}>
           <>
-            <ScrollView ref={chatHistoryViewRef} style={{ height: '100%', paddingHorizontal: 10, marginBottom: messageAreaPadding }}>
+            <ScrollView ref={chatHistoryViewRef}
+              refreshControl={
+                <RefreshControl refreshing={isRefreshing} onRefresh={() => {
+                  setIsLoading(true)
+                  loadChatHistory()
+                }} />
+              }
+              style={{ height: '100%', paddingHorizontal: 10, marginBottom: messageAreaPadding }}>
               {chatHistoryView.map((v, k) => (
                 <View
                   key={k}
@@ -312,11 +333,12 @@ const Chatroom = ({ navigation, route }) => {
                           </Card>}
                         {v.type == 1 &&
                           <TouchableRipple style={{ alignSelf: 'flex-end', width: 100, height: 100 }} onPress={() => {
-                            setPreviewImage(v.text)
+                            setPreviewImage(Remote.attachmentDownload(v.text))
                             setImagePreviewVisibility(true)
                           }}>
-                            <CachedImage style={{ flex: 1, padding: 10, borderRadius: 10 }} resizeMode="cover" imageStyle={{ borderRadius: 10 }} source={v.text} />
+                            <CachedImage style={{ flex: 1, padding: 10, borderRadius: 10 }} resizeMode="cover" imageStyle={{ borderRadius: 10 }} source={Remote.attachmentDownload(v.text)} />
                           </TouchableRipple>}
+                        {v.type == 2 && <Card style={{ alignSelf: 'flex-end', minWidth: 100, maxWidth: '85%' }}><AudioMessageView audioAttachment={v.text}></AudioMessageView></Card>}
                       </View>
                       <Avatar.Image style={{ marginLeft: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.getAvatar()} />}></Avatar.Image>
                     </>
@@ -366,7 +388,7 @@ const Chatroom = ({ navigation, route }) => {
                     chatMessageInputRef.current?.blur()
                     triggerAnimation()
                     setMenuStatus(true)
-                    setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({animated: true}), 300)
+                    setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({ animated: true }), 300)
                   }
                 }}></IconButton>
               </View>
@@ -419,23 +441,20 @@ const Chatroom = ({ navigation, route }) => {
                         await Audio.setAudioModeAsync({ allowsRecordingIOS: false })
                         setAudioRecordingStatus(false)
                         console.log(audioRecordingRef.current.getURI())
-                        fs.uploadAsync(
-                          Remote.stt(),
-                          audioRecordingRef.current.getURI(),
-                          { httpMethod: 'POST', uploadType: fs.FileSystemUploadType.MULTIPART }).then(r => {
-                            if (r.status == 200) {
-                              data = JSON.parse(r.body)
-                              if (data.status) {
-                                insertIntoChatInput(data.data)
-                              } else {
-                                setMessageText(`Unable to invoke STT service: ${data.data}`)
-                                setMessageState(true)
-                              }
+                        fs.uploadAsync(Remote.attachmentUploadAudio(), audioRecordingRef.current.getURI(), { httpMethod: 'POST', uploadType: fs.FileSystemUploadType.MULTIPART }).then(r => {
+                          if (r.status == 200) {
+                            data = JSON.parse(r.body)
+                            if (data.status) {
+                              sendAudio(data.id)
                             } else {
-                              setMessageText(`Unable to invoke STT service: NetworkError`)
+                              setMessageText(`Unable to upload audio attachment: ${data.data}`)
                               setMessageState(true)
                             }
-                          })
+                          } else {
+                            setMessageText(`Unable to upload audio attachment: NetworkError`)
+                            setMessageState(true)
+                          }
+                        })
                       })()
                     }}
                   />
@@ -499,7 +518,7 @@ const Chatroom = ({ navigation, route }) => {
               </View>}
             </KeyboardAvoidingView>
             <Portal>
-              <ImageView visible={imagePreviewVisibility} images={[{uri: previewImage}]} imageIndex={0} onRequestClose={() => setImagePreviewVisibility(false)}></ImageView>
+              <ImageView visible={imagePreviewVisibility} images={[{ uri: previewImage }]} imageIndex={0} onRequestClose={() => setImagePreviewVisibility(false)}></ImageView>
               <Message timeout={5000} style={{ marginBottom: 64 }} state={messageState} onStateChange={() => { setMessageState(false) }} icon="alert-circle" text={messageText} />
             </Portal>
           </>

@@ -64,36 +64,40 @@ const AddRefAudioDialog = ({ state, onOk, onErr, onDismiss }) => {
             A reference audio is an audio file on TTS service that can used to generate audio from text in accordance with the character's voice.
           </Text>
           <TextInput
+            mode='outlined'
             ref={refAudioNameRef}
-            style={{ marginTop: 10, width: '100%' }}
+            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
             label={'Reference audio name'}
             placeholder='E.g. narrative, pleased, disappointed...'
             value={refAudioName}
             onChangeText={v => setRefAudioName(v)}>
           </TextInput>
           <TextInput
+            mode='outlined'
             ref={refAudioTextRef}
-            style={{ marginTop: 10, width: '100%' }}
+            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
             label={'Reference audio text'}
             placeholder='The text content of reference audio'
             value={refAudioText}
             onChangeText={v => setRefAudioText(v)}>
           </TextInput>
           <TextInput
+            mode='outlined'
             ref={refAudioPathRef}
-            style={{ marginTop: 10, width: '100%' }}
+            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
             label={'Reference audio path'}
             placeholder='The path to the audio file on TTS service'
-            value={refAudioName}
-            onChangeText={v => setRefAudioName(v)}>
+            value={refAudioPath}
+            onChangeText={v => setRefAudioPath(v)}>
           </TextInput>
           <TextInput
+            mode='outlined'
             ref={refAudioLanguageRef}
-            style={{ marginTop: 10, width: '100%' }}
+            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
             label={'Reference audio language'}
             placeholder='en, auto, ...'
-            value={refAudioName}
-            onChangeText={v => setRefAudioName(v)}>
+            value={refAudioLanguage}
+            onChangeText={v => setRefAudioLanguage(v)}>
           </TextInput>
         </View>
       </TouchableWithoutFeedback>

@@ -83,10 +83,8 @@ function chatTerminate(session) {
   })
 }
 
-function attachmentUploadAudio(audioFile) {
-  const formData = new FormData()
-  formData.append('audio_file', audioFile)
-  return axios.post(`${serverUrl}/api/v1/attachment/upload/audio`, formData)
+function attachmentUploadAudio() {
+  return `${serverUrl}/api/v1/attachment/upload/audio`
 }
 
 function attachmentUploadImage() {
@@ -95,6 +93,10 @@ function attachmentUploadImage() {
 
 function attachmentDownload(attachmentId) {
   return `${serverUrl}/api/v1/attachment/${attachmentId}`
+}
+
+function attachmentUrl(attachmentId) {
+  return `/api/v1/attachment/${attachmentId}`
 }
 
 function charAvatar(charId) {
@@ -106,9 +108,10 @@ function charHistory(charId, offset = 0) {
   return axios.post(`${serverUrl}/api/v1/char/${charId}/history/${offset}`)
 }
 
-function charNew(charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
+function charNew(charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats) {
   return axios.post(`${serverUrl}/api/v1/char/new`, {
     charName,
+    useTTSService,
     useStickerSet,
     charPrompt,
     pastMemories,
@@ -152,13 +155,14 @@ function stickerList(setId) {
   return axios.post(`${serverUrl}/api/v1/sticker/list`, { setId })
 }
 
-function editCharacter(id, charName, charPrompt, pastMemories, exampleChats, useStickerSet) {
+function editCharacter(id, charName, charPrompt, pastMemories, exampleChats, useStickerSet, useTTSService) {
   return axios.post(`${serverUrl}/api/v1/char/${id}/edit`, {
     useStickerSet,
     charName,
     charPrompt,
     pastMemories,
     exampleChats,
+    useTTSService
   })
 }
 
@@ -259,6 +263,7 @@ export {
   attachmentDownload,
   attachmentUploadAudio,
   attachmentUploadImage,
+  attachmentUrl,
   characterList,
   charAvatar,
   charHistory,

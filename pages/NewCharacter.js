@@ -26,6 +26,7 @@ import {
 
 import Message from '../components/Message';
 import StickerSetSelector from '../components/StickerSetSelector';
+import TTSServiceSelector from '../components/TTSServiceSelector';
 import * as Remote from '../shared/remote';
 import { mdTheme } from '../shared/styles';
 
@@ -44,6 +45,7 @@ const NewCharacter = ({ navigation, route }) => {
   const [pastMemories, setPastMemories] = React.useState("")
   const [exampleChats, setExampleChats] = React.useState("")
   const [useStickerSet, setUseStickerSet] = React.useState({})
+  const [useTTSService, setUseTTSService] = React.useState(null)
 
   const charNameInputRef = React.useRef(null)
   const charPromptInputRef = React.useRef(null)
@@ -52,10 +54,15 @@ const NewCharacter = ({ navigation, route }) => {
   const scrollViewRef = React.useRef(null)
 
   useFocusEffect(React.useCallback(() => {
+    setUseTTSService({
+      id: 0,
+      name: "None",
+      description: "Do not use TTS service during conversation"
+    })
   }, []))
 
-  function onSubmit(charName, useStickerSet, charPrompt, pastMemories, exampleChats) {
-    Remote.charNew(charName, useStickerSet, charPrompt, pastMemories, exampleChats).then(r => {
+  function onSubmit(charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats) {
+    Remote.charNew(charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats).then(r => {
       if (r.data.status) {
         navigation.goBack()
       } else {
@@ -98,6 +105,19 @@ const NewCharacter = ({ navigation, route }) => {
                     value={charName}
                     onChangeText={(v) => setCharName(v)}
                   />
+
+                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
+                    Choose the TTS Service for character to use during conversations.
+                  </Text>
+
+                  <TTSServiceSelector
+                    style={{ width: '90%', marginTop: 20 }}
+                    onChange={v => setUseTTSService(v)}
+                    defaultValue={useTTSService}
+                    onErr={v => {
+                      setMessageText(`Unable to select TTS service: ${v}`)
+                      setMessageState(true)
+                    }}></TTSServiceSelector>
 
                   <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
                     Choose the sticker set for character to use during conversations.
@@ -154,7 +174,7 @@ const NewCharacter = ({ navigation, route }) => {
                   />
 
                   <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                    onSubmit(charName, useStickerSet.id, charPrompt, pastMemories, exampleChats)
+                    onSubmit(charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
                   }}>Create</Button>
                 </View>
 
