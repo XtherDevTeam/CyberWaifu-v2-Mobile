@@ -96,6 +96,7 @@ const TTSService = ({ navigation, route }) => {
     <PaperProvider theme={mdTheme()}>
       <>
         <Appbar.Header>
+          <Appbar.Action icon="information-outline" onPress={() => navigation.navigate('About')}></Appbar.Action>
           <Appbar.Content title={'TTS Services'}></Appbar.Content>
           <Appbar.Action icon="plus" onPress={() => setAddTTSServiceDialogState(true)}></Appbar.Action>
         </Appbar.Header>
@@ -111,7 +112,7 @@ const TTSService = ({ navigation, route }) => {
               <>
                 <ScrollView>
                   {ttsServiceList.map(r => (<List.Item
-                    left={() => <View style={{marginLeft: 10, padding: 10}}><Icon source={'server-network'} size={48}></Icon></View>}
+                    left={() => <View style={{ marginLeft: 10, padding: 10 }}><Icon source={'server-network'} size={48}></Icon></View>}
                     key={r.id}
                     title={r.name}
                     description={r.description}

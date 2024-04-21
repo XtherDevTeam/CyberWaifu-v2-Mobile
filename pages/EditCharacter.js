@@ -4,7 +4,6 @@ import * as fs from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import {
   Image,
-  KeyboardAvoidingView,
   ScrollView,
   TouchableWithoutFeedback,
   View,
@@ -15,13 +14,12 @@ import {
   Icon,
   PaperProvider,
   Portal,
-  Text,
-  TextInput,
   withTheme,
 } from 'react-native-paper';
 
 import { useFocusEffect } from '@react-navigation/native';
 
+import ContentEditDialog from '../components/ContentEditDialog';
 import Message from '../components/Message';
 import StickerSetSelector from '../components/StickerSetSelector';
 import TTSServiceSelector from '../components/TTSServiceSelector';
@@ -124,119 +122,95 @@ const EditCharacter = ({ navigation, route }) => {
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
           <Appbar.Content title={"Edit Character"}></Appbar.Content>
         </Appbar.Header>
-        <KeyboardAvoidingView behavior='padding' style={{ height: '100%' }}>
-          <TouchableWithoutFeedback onPress={() => {
-            charNameInputRef.current?.blur()
-            charPromptInputRef.current?.blur()
-            exampleChatsInputRef.current?.blur()
-            pastMemoriesInputRef.current?.blur()
-            scrollViewRef.current?.scrollToEnd({ animated: true })
-          }} accessible={false} style={{ height: '100%' }}>
-            <>
-              <ScrollView ref={scrollViewRef}>
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <Image
-                    style={{ width: 64, height: 64, borderRadius: 32, marginTop: 20, alignSelf: 'center' }}
-                    imageStyle={{ borderRadius: 32 }}
-                    source={{ uri: charAvatarUrl }} />
-                  <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                    ImagePicker.launchImageLibraryAsync().then(r => {
-                      if (!r.canceled) {
-                        r.assets.forEach(v => onUpload(v.uri))
-                      }
-                    })
-                  }}><Icon source={'file-image-plus'} /> Upload a new one</Button>
+        <TouchableWithoutFeedback onPress={() => {
+          charNameInputRef.current?.blur()
+          charPromptInputRef.current?.blur()
+          exampleChatsInputRef.current?.blur()
+          pastMemoriesInputRef.current?.blur()
+          scrollViewRef.current?.scrollToEnd({ animated: true })
+        }} accessible={false} style={{ height: '100%' }}>
+          <>
+            <ScrollView ref={scrollViewRef}>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Image
+                  style={{ width: 64, height: 64, borderRadius: 32, marginTop: 20, alignSelf: 'center' }}
+                  imageStyle={{ borderRadius: 32 }}
+                  source={{ uri: charAvatarUrl }} />
+                <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
+                  ImagePicker.launchImageLibraryAsync().then(r => {
+                    if (!r.canceled) {
+                      r.assets.forEach(v => onUpload(v.uri))
+                    }
+                  })
+                }}><Icon source={'file-image-plus'} /> Upload a new one</Button>
 
-                  <TextInput
-                    label="Character Name"
-                    placeholder='Naganohara Yoimiya'
-                    style={{ width: '90%', marginTop: 20 }}
-                    ref={charNameInputRef}
-                    value={charName}
-                    onChangeText={(v) => setCharName(v)}
-                  />
+                <ContentEditDialog
+                  title="Character Name"
+                  description="The name of the character"
+                  placeholder="Naganohara Yoimiya"
+                  style={{ width: '90%', paddingVertical: 20 }}
+                  defaultValue={charName}
+                  onOk={v => setCharName(v)}
+                />
 
-                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
-                    Choose the TTS Service for character to use during conversations.
-                  </Text>
+                <TTSServiceSelector
+                  style={{ width: '90%', marginTop: 20 }}
+                  onChange={v => setUseTTSService(v)}
+                  defaultValue={useTTSService}
+                  onErr={v => {
+                    setMessageText(`Unable to select TTS service: ${v}`)
+                    setMessageState(true)
+                  }}></TTSServiceSelector>
 
-                  <TTSServiceSelector
-                    style={{ width: '90%', marginTop: 20 }}
-                    onChange={v => setUseTTSService(v)}
-                    defaultValue={useTTSService}
-                    onErr={v => {
-                      setMessageText(`Unable to select TTS service: ${v}`)
-                      setMessageState(true)
-                    }}></TTSServiceSelector>
-
-                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
-                    Choose the sticker set for character to use during conversations.
-                  </Text>
-
-                  <StickerSetSelector
-                    style={{ width: '90%', marginTop: 20 }}
-                    onChange={v => setUseStickerSet(v)}
-                    defaultValue={useStickerSet}
-                    onErr={v => {
-                      setMessageText(`Unable to select sticker set: ${v}`)
-                      setMessageState(true)
-                    }}></StickerSetSelector>
-
-                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
-                    Prompt is a piece of information included character's personalities, and introduction.
-                  </Text>
-
-                  <TextInput
-                    label="Character Prompt"
-                    placeholder='...'
-                    style={{ width: '90%', marginTop: 20 }}
-                    ref={charPromptInputRef}
-                    value={charPrompt}
-                    multiline={true}
-                    onChangeText={(v) => setCharPrompt(v)}
-                  />
-
-                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
-                    This sets up character's past memories.
-                  </Text>
-
-                  <TextInput
-                    label="Character Memories"
-                    placeholder='...'
-                    style={{ width: '90%', marginTop: 20 }}
-                    ref={pastMemoriesInputRef}
-                    value={pastMemories}
-                    multiline={true}
-                    onChangeText={(v) => setPastMemories(v)}
-                  />
-
-                  <Text variant='bodyMedium' style={{ width: '95%', textAlign: 'center', marginTop: 20 }}>
-                    Appropriate example chats can help the model grasp a better understanding of your character.
-                  </Text>
-
-                  <TextInput
-                    label="Example chats"
-                    placeholder='...'
-                    style={{ width: '90%', marginTop: 20 }}
-                    ref={exampleChatsInputRef}
-                    value={exampleChats}
-                    multiline={true}
-                    onChangeText={(v) => setExampleChats(v)}
-                  />
+                <StickerSetSelector
+                  style={{ width: '90%', marginTop: 20 }}
+                  onChange={v => setUseStickerSet(v)}
+                  onErr={() => {
+                    setMessageText(`Unable to select sticker set: ${v}`)
+                    setMessageState(true)
+                  }}></StickerSetSelector>
 
 
-                  <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                    onSubmit(charId, charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
-                  }}>Edit</Button>
-                </View>
+                <ContentEditDialog
+                  title="Character Prompt"
+                  description="Prompt is a piece of information included character's personalities, and introduction."
+                  style={{ width: '90%', paddingVertical: 20 }}
+                  defaultValue={charPrompt}
+                  onOk={v => setCharPrompt(v)}
+                />
 
-              </ScrollView>
-              <Portal>
-                <Message timeout={5000} style={{ marginBottom: 64 }} state={messageState} onStateChange={() => { setMessageState(false) }} icon="alert-circle" text={messageText} />
-              </Portal>
-            </>
-          </TouchableWithoutFeedback >
-        </KeyboardAvoidingView>
+                <ContentEditDialog
+                  title="Character Memories"
+                  description="This sets up character's past memories."
+                  placeholder='...'
+                  style={{ width: '90%', paddingVertical: 20 }}
+                  defaultValue={pastMemories}
+                  multiline={true}
+                  onOk={(v) => setPastMemories(v)}
+                />
+
+                <ContentEditDialog
+                  title="Example chats"
+                  description="Appropriate example chats can help the model grasp a better understanding of your character."
+                  placeholder='...'
+                  style={{ width: '90%', paddingVertical: 20 }}
+                  defaultValue={exampleChats}
+                  multiline={true}
+                  onOk={(v) => setExampleChats(v)}
+                />
+
+
+                <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
+                  onSubmit(charId, charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
+                }}>Edit</Button>
+              </View>
+
+            </ScrollView>
+            <Portal>
+              <Message timeout={5000} style={{ marginBottom: 64 }} state={messageState} onStateChange={() => { setMessageState(false) }} icon="alert-circle" text={messageText} />
+            </Portal>
+          </>
+        </TouchableWithoutFeedback >
       </>
     </PaperProvider>
   )

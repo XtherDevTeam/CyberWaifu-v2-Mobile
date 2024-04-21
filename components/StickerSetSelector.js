@@ -11,7 +11,6 @@ import {
   List,
   Portal,
   Text,
-  TextInput,
   withTheme,
 } from 'react-native-paper';
 
@@ -47,10 +46,9 @@ function StickerSetSelector({ defaultValue, onChange, onErr, style }) {
   }, [defaultValue])
 
   return <>
-    <TextInput ref={inputRef} label={'Sticker set'} value={value} onFocus={() => {
-      inputRef.current?.blur()
+    <List.Item style={style} title={'Sticker set'} description={value} onPress={() => {
       setStatus(true)
-    }} style={{...style}}></TextInput>
+    }} />
     <Portal>
       <Dialog visible={status} onDismiss={() => setStatus(false)}>
         <Dialog.Title>Select sticker set</Dialog.Title>

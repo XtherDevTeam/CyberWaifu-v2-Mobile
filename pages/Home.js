@@ -71,7 +71,7 @@ const Home = ({ navigation, route }) => {
                     key={r.id}
                     title={r.charName}
                     description={r.latestMsg}
-                    left={props => <Avatar.Image style={{borderRadius: '100%'}} {...props} source={{uri: Remote.charAvatar(r.id)}} />}
+                    left={props => <Avatar.Image style={{ borderRadius: '100%' }} {...props} source={{ uri: Remote.charAvatar(r.id) }} />}
                     onPress={() => {
                       console.log(r)
                       navigation.navigate('Chatroom', {

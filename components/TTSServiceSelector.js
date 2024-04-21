@@ -12,7 +12,6 @@ import {
   List,
   Portal,
   Text,
-  TextInput,
   withTheme,
 } from 'react-native-paper';
 
@@ -32,7 +31,7 @@ function TTSServiceSelector({ defaultValue, onChange, onErr, style }) {
           id: 0,
           name: 'None',
           description: 'Do not use TTS service during conversation'
-        },...r.data.data])
+        }, ...r.data.data])
       } else {
         onErr(r.data.data)
       }
@@ -50,10 +49,9 @@ function TTSServiceSelector({ defaultValue, onChange, onErr, style }) {
   }, [defaultValue])
 
   return <>
-    <TextInput ref={inputRef} label={'TTS Service'}  value={value} onFocus={() => {
-      inputRef.current?.blur()
+    <List.Item style={style} title={'TTS Service'} description={value} onPress={() => {
       setStatus(true)
-    }} style={{...style}}></TextInput>
+    }} />
     <Portal>
       <Dialog visible={status} onDismiss={() => setStatus(false)}>
         <Dialog.Title>Select TTS Service</Dialog.Title>
@@ -67,7 +65,7 @@ function TTSServiceSelector({ defaultValue, onChange, onErr, style }) {
                 key={r.id}
                 title={r.name}
                 description={r.description}
-                left={() => <View style={{padding: 10}}><Icon source={'server-network'} size={48}></Icon></View>}
+                left={() => <View style={{ padding: 10 }}><Icon source={'server-network'} size={48}></Icon></View>}
                 onPress={() => {
                   onChange(r)
                   setValue(r.name)
