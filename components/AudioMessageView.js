@@ -66,6 +66,7 @@ function AudioMessageView({ audioAttachment, style }) {
         }
       }}
     />
+    {playbackLength === 0 && <Text style={{marginRight: 10}}>Voice</Text>}
     {playbackLength !== 0 && <Text variant="bodyMedium">{playbackPosition} / {playbackLength} s</Text>}
   </View>)
 }

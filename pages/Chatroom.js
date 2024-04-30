@@ -262,6 +262,7 @@ const Chatroom = ({ navigation, route }) => {
     }
     images.map(v => { msgChain.push('image:' + v) })
     clearChatImages()
+    setChatMessageInput('')
     console.log(msgChain)
     sendMessageChain(msgChain)
   }
@@ -371,11 +372,10 @@ const Chatroom = ({ navigation, route }) => {
                   }}
                   onChangeText={v => {
                     setChatMessageInput(v)
-                  }} mode='flat' style={{ flex: 16 }} multiline={true} label={'Type messages'}></TextInput>
+                  }} mode='flat' style={{ flex: 16, maxHeight: Dimensions.get('window').height * 0.1 }} multiline={true} label={'Type messages'}></TextInput>
                 <IconButton icon="send" style={{ flex: 2 }} onPress={() => {
                   uploadAllAttachment().then(() => {
                     buildMessageChainAndSend(chatMessageInput, chatImages.current)
-                    setChatMessageInput('')
                   }).catch(r => {
                     setMessageText(`Unable to upload attachments: ${r}`)
                     setMessageState(true)
