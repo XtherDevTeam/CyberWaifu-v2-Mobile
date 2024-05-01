@@ -361,7 +361,7 @@ const Chatroom = ({ navigation, route }) => {
       <>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
-          <Appbar.Content title={isReceivingMessage ? `${charName} (Texting...)` : charName}></Appbar.Content>
+          <Appbar.Content title={isReceivingMessage ? `${charName} (Typing...)` : charName}></Appbar.Content>
           <Appbar.Action icon={'book-edit'} onPress={() => navigation.navigate('Edit Character', { ...route.params })}></Appbar.Action>
         </Appbar.Header>
         <TouchableWithoutFeedback onPress={() => {

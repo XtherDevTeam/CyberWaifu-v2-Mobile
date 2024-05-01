@@ -14,6 +14,8 @@ import {
   withTheme,
 } from 'react-native-paper';
 
+import version from '../shared/version';
+
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical'
 
 let defaultConfirmDeletingDialogState = {
@@ -39,7 +41,7 @@ const About = ({ navigation, route }) => {
                   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <Avatar.Image source={require('../assets/icon.png')} size={56}></Avatar.Image>
                     <Text variant="titleLarge">CyberWaifu-v2 Mobile</Text>
-                    <Text variant="bodyMedium" style={{ textAlign: 'center' }}>Version: 1.0.0(1)</Text>
+                    <Text variant="bodyMedium" style={{ textAlign: 'center' }}>Version: {version.version} ({version.build})</Text>
                     <Text variant="bodyMedium" style={{ textAlign: 'center' }}>Made with ❤️ by Jerry Chou and Naganohara Yoimiya</Text>
                   </View>
                   <View style={{ marginTop: 10, marginBottom: 10 }}>
