@@ -257,6 +257,23 @@ function updateTTSService(id, name, description, url) {
   })
 }
 
+function chatKeepAlive(session) {
+  return axios.post(`${serverUrl}/api/v1/chat/keep_alive`, {
+    session,
+  })
+}
+
+function updateUserName(userName) {
+  return axios.post(`${serverUrl}/api/v1/update_username`, {
+    userName})
+}
+
+function updatePassword(password) {
+  return axios.post(`${serverUrl}/api/v1/update_password`, {
+    password
+  })
+}
+
 export {
   addStickerToSet,
   addTTSReferenceAudio,
@@ -269,6 +286,7 @@ export {
   charHistory,
   charNew,
   chatEstablish,
+  chatKeepAlive,
   chatMessage,
   chatTerminate,
   checkIfInitialized,
@@ -297,5 +315,7 @@ export {
   stt,
   updateAvatar,
   updateCharacterAvatar,
+  updatePassword,
   updateTTSService,
+  updateUserName,
 };

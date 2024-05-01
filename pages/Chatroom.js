@@ -86,6 +86,12 @@ const Chatroom = ({ navigation, route }) => {
   const [isRefreshing, setIsRefreshing] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
 
+  const keepAliveTimer = React.useRef(null)
+  const [isReceivingMessage, setIsReceivingMessage] = React.useState(false)
+  const [isTyping, setIsTyping] = React.useState(false)
+  const [pendingMsgChain, setPendingMsgChain] = React.useState([])
+  const [pendingSendTimer, setPendingSendTimer] = React.useState(null)
+
   function triggerAnimation() {
     LayoutAnimation.configureNext({ ...LayoutAnimation.Presets.linear, duration: 100 })
   }
@@ -132,6 +138,13 @@ const Chatroom = ({ navigation, route }) => {
     triggerAnimation()
   }, [chatImagesView])
 
+  React.useEffect(() => {
+    if (audioRecordingStatus) {
+      console.log('triggerred audio recording status change')
+      discardPendingMessageTimer()
+    }
+  }, [audioRecordingStatus])
+
   function updateChatImages(uri) {
     chatImages.current.push(uri)
     let r = []
@@ -168,7 +181,29 @@ const Chatroom = ({ navigation, route }) => {
     }
   }, [chatHistoryView])
 
+  React.useEffect(() => {
+      console.log('triggerred reset pending msg timer by message chain change')
+      addTemporaryMessage(pendingMsgChain)
+      resetPendingMsgTimer()
+  }, [pendingMsgChain])
+
+  function addTemporaryMessage(msgChain) {
+    // setChatHistoryView([...chatHistoryView, { role: 'user_temporary', type: 0, text: 'Sending...' }])
+    let to_push = msgChain.map(v => {
+      if (v.startsWith('image:')) {
+        return { role: 'user_temporary', type: 1, text: v.substring(6) }
+      } else if (v.startsWith('audio:')) {
+        return { role: 'user_temporary', type: 2, text: v.substring(6) }
+      } else {
+        return { role: 'user_temporary', type: 0, text: v }
+      }
+    })
+
+    setChatHistoryView([...chatHistoryView, ...to_push])
+  }
+
   function receiveMessage(response, order = false) {
+    setIsReceivingMessage(false)
     if (order) {
       console.log('reversed order')
       chatHistoryView.forEach(k => {
@@ -178,11 +213,11 @@ const Chatroom = ({ navigation, route }) => {
     } else {
       let n = []
       let timeout = 0
-      chatHistoryView.forEach(k => { n.push(k) })
+      chatHistoryView.forEach(k => { k.role.endsWith('_temporary') ? null : n.push(k) })
       console.log('normal order', chatHistoryView)
-      response.forEach(k => {
-        if (k.role === 'model') {
-          timeout += k.text.length * 0.01
+      response.forEach((k, i) => {
+        if (k.role === 'model' && k.type == 0) {
+          timeout += k.text.length
         }
         n.push(k)
         setTimeout(() => {
@@ -228,14 +263,17 @@ const Chatroom = ({ navigation, route }) => {
 
   function sendMessageChain(msgChain) {
     if (chatSession.current === null) {
+      setIsReceivingMessage(true)
       Remote.chatEstablish(charName, msgChain).then(r => {
         if (r.data.status) {
           console.log(r.data)
           chatSession.current = r.data.session
           receiveMessage(r.data.response)
         }
+        setPendingMsgChain([])
       })
     } else {
+      setIsReceivingMessage(true)
       Remote.chatMessage(chatSession.current, msgChain).then(r => {
         if (r.data.status) {
           receiveMessage(r.data.response)
@@ -243,6 +281,7 @@ const Chatroom = ({ navigation, route }) => {
           setMessageText(`Failed to send message: ${r.data.data}`)
           setMessageState(true)
         }
+        setPendingMsgChain([])
       }).catch(r => {
         setMessageText(`Failed to send message: NetworkError`)
         setMessageState(true)
@@ -251,20 +290,53 @@ const Chatroom = ({ navigation, route }) => {
   }
 
   function sendAudio(attachmentId) {
-    let msgChain = [`audio:${attachmentId}`]
-    sendMessageChain(msgChain)
+    setPendingMsgChain([...pendingMsgChain, `audio:${attachmentId}`])
   }
 
-  function buildMessageChainAndSend(text, images) {
+  function buildMessageChain(text, images) {
     let msgChain = []
+    pendingMsgChain.forEach(v => {v.role.endswith('_temporary') ? null : msgChain.push(v)})
     if (text.length !== 0) {
       msgChain.push(text)
     }
     images.map(v => { msgChain.push('image:' + v) })
     clearChatImages()
     setChatMessageInput('')
-    console.log(msgChain)
-    sendMessageChain(msgChain)
+    setPendingMsgChain(msgChain)
+  }
+
+  function discardPendingMessageTimer() {
+    if (pendingSendTimer !== null) {
+      clearTimeout(pendingSendTimer)
+      setPendingSendTimer(null)
+    }
+  }
+
+  function resetPendingMsgTimer() {
+    if (pendingMsgChain.length === 0) {
+      return 
+    }
+    let f = () => sendMessageChain(pendingMsgChain)
+    if (pendingSendTimer !== null) {
+      clearTimeout(pendingSendTimer)
+    }
+    // if user is recording voice message, do not send message immediately
+    // deprecated: cuz it will discard this timer directly.
+    // if (audioRecordingStatus) {
+    //   console.log('delayed sending message by 1145141919')
+    //   setPendingSendTimer(setTimeout(f, 1145141919))
+    // }
+
+    // if user is typing message, wait for 10 seconds before sending
+    // if (isTyping) {
+    //   setPendingSendTimer(setTimeout(f, 10000))
+    // }
+    // if menu is open, user probably wants to send emotion stickers, so postpone sending message
+    if (menuStatus) {
+      setPendingSendTimer(setTimeout(f, 5000))
+    } else {
+      setPendingSendTimer(setTimeout(f, 1000))
+    }
   }
 
   function buildTextView(availableStickers, text) {
@@ -273,7 +345,6 @@ const Chatroom = ({ navigation, route }) => {
         return <Text key={k}>{v.substring(5)}</Text>
       } else {
         return <Text key={k}><CachedImage style={{ width: 48, height: 48, borderRadius: 24, display: '' }} imageStyle={{ borderRadius: 24 }} source={Remote.stickerGet(useStickerSet, v.substring('4'))} /></Text>
-        // return <Text key={k}>{v.substring(4)}</Text>
       }
     })
   }
@@ -283,7 +354,7 @@ const Chatroom = ({ navigation, route }) => {
       <>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
-          <Appbar.Content title={charName}></Appbar.Content>
+          <Appbar.Content title={isReceivingMessage ? `${charName} (Receiving...)` : charName}></Appbar.Content>
           <Appbar.Action icon={'book-edit'} onPress={() => navigation.navigate('Edit Character', { ...route.params })}></Appbar.Action>
         </Appbar.Header>
         <TouchableWithoutFeedback onPress={() => {
@@ -306,10 +377,10 @@ const Chatroom = ({ navigation, route }) => {
                     flexDirection: 'row',
                     width: '100%',
                     marginBottom: 10,
-                    justifyContent: v.role === 'model' ? 'flex-start' : 'flex-end',
+                    justifyContent: v.role.startsWith('model') ? 'flex-start' : 'flex-end',
                   }}
                 >
-                  {(v.role === 'model') && (
+                  {(v.role.startsWith('model')) && (
                     <>
                       <Avatar.Image style={{ marginRight: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.charAvatar(route.params.charId)} />}></Avatar.Image>
                       <View style={{ flexDirection: 'column' }}>
@@ -325,7 +396,7 @@ const Chatroom = ({ navigation, route }) => {
                       </View>
                     </>
                   )}
-                  {v.role === 'user' && (
+                  {v.role.startsWith('user') && (
                     <>
                       <View style={{ flexDirection: 'column' }}>
                         <Text style={{ marginBottom: 5, textAlign: 'right' }}>{sessionUsername}</Text>
@@ -362,25 +433,39 @@ const Chatroom = ({ navigation, route }) => {
               backgroundColor: mdTheme().colors.surfaceVariant
             }}>
               <View style={{ flexDirection: 'row', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                <TextInput ref={chatMessageInputRef} value={chatMessageInput} onFocus={() => {
-                  setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({ animated: true }), 100)
-                  triggerAnimation()
-                  setMenuStatus(false)
-                }}
+                <TextInput ref={chatMessageInputRef} value={chatMessageInput}
+                  onFocus={() => {
+                    setIsTyping(true)
+                    setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({ animated: true }), 100)
+                    triggerAnimation()
+                    setMenuStatus(false)
+                    if (chatSession.current !== null) {
+                      keepAliveTimer.current = setInterval(() => {
+                        Remote.chatKeepAlive(chatSession.current)
+                      }, 5000)
+                    }
+                  }}
+                  onBlur={() => {
+                    setIsTyping(false)
+                    resetPendingMsgTimer()
+                    console.log('triggerred reset pending msg timer by blur')
+                    clearInterval(keepAliveTimer.current)
+                  }}
                   onSelectionChange={(e) => {
                     chatMessageInputCursorPosition.current = e.nativeEvent.selection.end + 1
                   }}
                   onChangeText={v => {
                     setChatMessageInput(v)
-                  }} mode='flat' style={{ flex: 16, maxHeight: Dimensions.get('window').height * 0.1 }} multiline={true} label={'Type messages'}></TextInput>
+                    console.log('triggerred reset pending msg timer by typing')
+                    discardPendingMessageTimer()
+                  }} mode='flat' style={{ flex: 16, maxHeight: Dimensions.get('window').height * 0.2 }} multiline={true} label={'Type messages'}></TextInput>
                 <IconButton icon="send" style={{ flex: 2 }} onPress={() => {
                   uploadAllAttachment().then(() => {
-                    buildMessageChainAndSend(chatMessageInput, chatImages.current)
+                    buildMessageChain(chatMessageInput, chatImages.current)
                   }).catch(r => {
                     setMessageText(`Unable to upload attachments: ${r}`)
                     setMessageState(true)
                   })
-
                   chatImages.current = []
                 }}></IconButton>
                 <IconButton icon="dots-vertical" style={{ flex: 2 }} onPress={() => {

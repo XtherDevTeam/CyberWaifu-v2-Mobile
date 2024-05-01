@@ -24,15 +24,15 @@ function AudioMessageView({ audioAttachment, style }) {
         if (sound.current) {
           await sound.current.unloadAsync()
         }
-        console.log('i dont know anything')
         sound.current = (await Audio.Sound.createAsync({ uri: Remote.attachmentDownload(audioAttachment) })).sound
-        sound.current.setStatusAsync({shouldPlay: true})
+        sound.current.setStatusAsync({shouldPlay: true, isLooping: false})
         sound.current.setOnPlaybackStatusUpdate(status => {
           if (status.didJustFinish) {
             (async () => {
               let s = await sound.current.getStatusAsync()
               s.positionMillis = 0
               await sound.current.setStatusAsync(s)
+              await sound.current.pauseAsync()
             })()
           }
           setPlayStatus(status.isPlaying)
@@ -55,7 +55,6 @@ function AudioMessageView({ audioAttachment, style }) {
       size={20}
       onPress={() => {
         if (isInitialState) {
-          console.log('pressed')
           setIsInitialState(false)
         } else {
           if (playStatus) {
