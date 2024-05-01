@@ -179,12 +179,12 @@ const EditTTSService = ({ navigation, route }) => {
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
           <Appbar.Content title={"Edit TTS Service"}></Appbar.Content>
         </Appbar.Header>
-        <KeyboardAvoidingView behavior='padding' style={{ height: '100%' }}>
+        <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'none'} style={{ height: '100%' }}>
           <TouchableWithoutFeedback onPress={() => {
             scrollViewRef.current?.scrollToEnd({ animated: true })
           }} accessible={false} style={{ height: '100%' }}>
             <>
-              <ScrollView ref={scrollViewRef}>
+              <ScrollView ref={scrollViewRef} style={{'height': '100%'}}>
                 <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 40 }}>
                   <TextInput
                     label="TTS Service name"

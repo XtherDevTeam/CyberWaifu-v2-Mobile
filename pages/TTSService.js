@@ -96,7 +96,6 @@ const TTSService = ({ navigation, route }) => {
     <PaperProvider theme={mdTheme()}>
       <>
         <Appbar.Header>
-          <Appbar.Action icon="information-outline" onPress={() => navigation.navigate('About')}></Appbar.Action>
           <Appbar.Content title={'TTS Services'}></Appbar.Content>
           <Appbar.Action icon="plus" onPress={() => setAddTTSServiceDialogState(true)}></Appbar.Action>
         </Appbar.Header>

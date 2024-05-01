@@ -10,6 +10,7 @@ import {
   adaptNavigationTheme,
   Appbar,
   Button,
+  List,
   PaperProvider,
   Portal,
   Text,
@@ -90,60 +91,62 @@ const NewCharacter = ({ navigation, route }) => {
                   You can edit the new character's profile here.
                 </Text>
 
-                <ContentEditDialog
-                  title="Character Name"
-                  description="The name of the character"
-                  placeholder="Naganohara Yoimiya"
-                  style={{ width: '90%', paddingVertical: 20 }}
-                  defaultValue={charName}
-                  onOk={v => setCharName(v)}
-                />
+                <List.Section style={{width: '100%'}}>
+                  <ContentEditDialog
+                    title="Character Name"
+                    description="The name of the character"
+                    placeholder="Naganohara Yoimiya"
+                    style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+                    defaultValue={charName}
+                    onOk={v => setCharName(v)}
+                  />
 
-                <TTSServiceSelector
-                  style={{ width: '90%', marginTop: 20 }}
-                  onChange={v => setUseTTSService(v)}
-                  defaultValue={useTTSService}
-                  onErr={v => {
-                    setMessageText(`Unable to select TTS service: ${v}`)
-                    setMessageState(true)
-                  }}></TTSServiceSelector>
+                  <TTSServiceSelector
+                    style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+                    onChange={v => setUseTTSService(v)}
+                    defaultValue={useTTSService}
+                    onErr={v => {
+                      setMessageText(`Unable to select TTS service: ${v}`)
+                      setMessageState(true)
+                    }}></TTSServiceSelector>
 
-                <StickerSetSelector
-                  style={{ width: '90%', marginTop: 20 }}
-                  onChange={v => setUseStickerSet(v)}
-                  onErr={() => {
-                    setMessageText(`Unable to select sticker set: ${v}`)
-                    setMessageState(true)
-                  }}></StickerSetSelector>
+                  <StickerSetSelector
+                    style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+                    onChange={v => setUseStickerSet(v)}
+                    onErr={() => {
+                      setMessageText(`Unable to select sticker set: ${v}`)
+                      setMessageState(true)
+                    }}></StickerSetSelector>
 
 
-                <ContentEditDialog
-                  title="Character Prompt"
-                  description="Prompt is a piece of information included character's personalities, and introduction."
-                  style={{ width: '90%', paddingVertical: 20 }}
-                  defaultValue={charPrompt}
-                  onOk={v => setCharPrompt(v)}
-                />
+                  <ContentEditDialog
+                    title="Character Prompt"
+                    description="Prompt is a piece of information included character's personalities, and introduction."
+                    style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+                    defaultValue={charPrompt}
+                    onOk={v => setCharPrompt(v)}
+                  />
 
-                <ContentEditDialog
-                  title="Character Memories"
-                  description="This sets up character's past memories."
-                  placeholder='...'
-                  style={{ width: '90%', paddingVertical: 20 }}
-                  defaultValue={pastMemories}
-                  multiline={true}
-                  onOk={(v) => setPastMemories(v)}
-                />
+                  <ContentEditDialog
+                    title="Character Memories"
+                    description="This sets up character's past memories."
+                    placeholder='...'
+                    style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+                    defaultValue={pastMemories}
+                    multiline={true}
+                    onOk={(v) => setPastMemories(v)}
+                  />
 
-                <ContentEditDialog
-                  title="Example chats"
-                  description="Appropriate example chats can help the model grasp a better understanding of your character."
-                  placeholder='...'
-                  style={{ width: '90%', paddingVertical: 20 }}
-                  defaultValue={exampleChats}
-                  multiline={true}
-                  onOk={(v) => setExampleChats(v)}
-                />
+                  <ContentEditDialog
+                    title="Example chats"
+                    description="Appropriate example chats can help the model grasp a better understanding of your character."
+                    placeholder='...'
+                    style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+                    defaultValue={exampleChats}
+                    multiline={true}
+                    onOk={(v) => setExampleChats(v)}
+                  />
+                </List.Section>
 
                 <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
                   onSubmit(charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
