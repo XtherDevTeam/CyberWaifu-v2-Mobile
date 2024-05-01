@@ -187,8 +187,16 @@ const Chatroom = ({ navigation, route }) => {
       resetPendingMsgTimer()
   }, [pendingMsgChain])
 
+  function clearTemporaryMessage() {
+    let a = []
+    chatHistoryView.forEach(k => { k.role.endsWith('_temporary') ? null : a.push(k) })
+    setChatHistoryView(a)
+  }
+
   function addTemporaryMessage(msgChain) {
     // setChatHistoryView([...chatHistoryView, { role: 'user_temporary', type: 0, text: 'Sending...' }])
+    let a = []
+    chatHistoryView.forEach(k => { k.role.endsWith('_temporary') ? null : a.push(k) })
     let to_push = msgChain.map(v => {
       if (v.startsWith('image:')) {
         return { role: 'user_temporary', type: 1, text: v.substring(6) }
@@ -198,8 +206,8 @@ const Chatroom = ({ navigation, route }) => {
         return { role: 'user_temporary', type: 0, text: v }
       }
     })
-
-    setChatHistoryView([...chatHistoryView, ...to_push])
+    console.log('adding temporary message', to_push)
+    setChatHistoryView([...a, ...to_push])
   }
 
   function receiveMessage(response, order = false) {
@@ -294,8 +302,7 @@ const Chatroom = ({ navigation, route }) => {
   }
 
   function buildMessageChain(text, images) {
-    let msgChain = []
-    pendingMsgChain.forEach(v => {v.role.endswith('_temporary') ? null : msgChain.push(v)})
+    let msgChain = [...pendingMsgChain] // force copy, otherwise it can't trigger resetPendingMsgTimer
     if (text.length !== 0) {
       msgChain.push(text)
     }
@@ -354,7 +361,7 @@ const Chatroom = ({ navigation, route }) => {
       <>
         <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()}></Appbar.BackAction>
-          <Appbar.Content title={isReceivingMessage ? `${charName} (Receiving...)` : charName}></Appbar.Content>
+          <Appbar.Content title={isReceivingMessage ? `${charName} (Texting...)` : charName}></Appbar.Content>
           <Appbar.Action icon={'book-edit'} onPress={() => navigation.navigate('Edit Character', { ...route.params })}></Appbar.Action>
         </Appbar.Header>
         <TouchableWithoutFeedback onPress={() => {

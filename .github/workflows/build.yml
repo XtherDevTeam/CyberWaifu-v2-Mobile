@@ -45,5 +45,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: android-build
-        path: android/app/build/outputs/apk/build
+        path: android/app/build/outputs/apk
         

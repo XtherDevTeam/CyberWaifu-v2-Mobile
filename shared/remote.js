@@ -187,6 +187,7 @@ function updateCharacterAvatar(id) {
 }
 
 function splitEmotionAndText(emotions, text) {
+  text = '' + text; // Convert to string if not already, don't even know why this is necessary
   // Construct the regular expression pattern
   const pattern = new RegExp("\\((?:" + emotions.join("|") + ")\\)", "g");
 
