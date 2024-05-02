@@ -66,7 +66,7 @@ const AddRefAudioDialog = ({ state, onOk, onErr, onDismiss }) => {
           <TextInput
             mode='outlined'
             ref={refAudioNameRef}
-            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
+            style={{ marginTop: 10, width: '100%' }}
             label={'Reference audio name'}
             placeholder='E.g. narrative, pleased, disappointed...'
             value={refAudioName}
@@ -75,7 +75,7 @@ const AddRefAudioDialog = ({ state, onOk, onErr, onDismiss }) => {
           <TextInput
             mode='outlined'
             ref={refAudioTextRef}
-            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
+            style={{ marginTop: 10, width: '100%' }}
             label={'Reference audio text'}
             placeholder='The text content of reference audio'
             value={refAudioText}
@@ -84,7 +84,7 @@ const AddRefAudioDialog = ({ state, onOk, onErr, onDismiss }) => {
           <TextInput
             mode='outlined'
             ref={refAudioPathRef}
-            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
+            style={{ marginTop: 10, width: '100%' }}
             label={'Reference audio path'}
             placeholder='The path to the audio file on TTS service'
             value={refAudioPath}
@@ -93,7 +93,7 @@ const AddRefAudioDialog = ({ state, onOk, onErr, onDismiss }) => {
           <TextInput
             mode='outlined'
             ref={refAudioLanguageRef}
-            style={{ marginTop: 10, width: '100%', backgroundColor: 'rgba(0,0,0,0)' }}
+            style={{ marginTop: 10, width: '100%' }}
             label={'Reference audio language'}
             placeholder='en, auto, ...'
             value={refAudioLanguage}
@@ -184,7 +184,7 @@ const EditTTSService = ({ navigation, route }) => {
             scrollViewRef.current?.scrollToEnd({ animated: true })
           }} accessible={false} style={{ height: '100%' }}>
             <>
-              <ScrollView ref={scrollViewRef} style={{'height': '100%'}}>
+              <ScrollView ref={scrollViewRef} style={{ 'height': '100%' }}>
                 <View style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 40 }}>
                   <TextInput
                     label="TTS Service name"

@@ -227,11 +227,11 @@ const Chatroom = ({ navigation, route }) => {
         if (k.role === 'model' && k.type == 0) {
           timeout += k.text.length
         }
-        n.push(k)
         setTimeout(() => {
-          console.log('setting history view', n)
-          setChatHistoryView(n)
-        }, timeout)
+          console.log('setting history view', [...n, k])
+          setChatHistoryView([...n, k])
+        }, timeout * 10)
+        n.push(k)
       })
     }
   }
@@ -445,6 +445,7 @@ const Chatroom = ({ navigation, route }) => {
                     setIsTyping(true)
                     setTimeout(() => chatHistoryViewRef.current?.scrollToEnd({ animated: true }), 100)
                     triggerAnimation()
+                    discardPendingMessageTimer()
                     setMenuStatus(false)
                     if (chatSession.current !== null) {
                       keepAliveTimer.current = setInterval(() => {
@@ -464,7 +465,6 @@ const Chatroom = ({ navigation, route }) => {
                   onChangeText={v => {
                     setChatMessageInput(v)
                     console.log('triggerred reset pending msg timer by typing')
-                    discardPendingMessageTimer()
                   }} mode='flat' style={{ flex: 16, maxHeight: Dimensions.get('window').height * 0.2 }} multiline={true} label={'Type messages'}></TextInput>
                 <IconButton icon="send" style={{ flex: 2 }} onPress={() => {
                   uploadAllAttachment().then(() => {
