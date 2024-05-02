@@ -182,9 +182,9 @@ const Chatroom = ({ navigation, route }) => {
   }, [chatHistoryView])
 
   React.useEffect(() => {
-      console.log('triggerred reset pending msg timer by message chain change')
-      addTemporaryMessage(pendingMsgChain)
-      resetPendingMsgTimer()
+    console.log('triggerred reset pending msg timer by message chain change')
+    addTemporaryMessage(pendingMsgChain)
+    resetPendingMsgTimer()
   }, [pendingMsgChain])
 
   function clearTemporaryMessage() {
@@ -219,20 +219,41 @@ const Chatroom = ({ navigation, route }) => {
       })
       setChatHistoryView(response)
     } else {
-      let n = []
-      let timeout = 0
-      chatHistoryView.forEach(k => { k.role.endsWith('_temporary') ? null : n.push(k) })
-      console.log('normal order', chatHistoryView)
-      response.forEach((k, i) => {
-        if (k.role === 'model' && k.type == 0) {
-          timeout += k.text.length
+      // Filter out temporary messages from the chat history
+      const filteredHistory = chatHistoryView.filter(message => !message.role.endsWith('_temporary'));
+
+      // Create a queue to maintain order of messages
+      const messageQueue = []
+      let firstFlag = true
+
+      // Process each response and add it to the queue with calculated delay
+      response.forEach(resp => {
+        let delay = 0
+        if (resp.role === 'model' && resp.type === 0) {
+          if (firstFlag) {
+            delay = resp.text.length * 10 // Calculate delay based on text length
+          } else {
+            firstFlag = false
+          }
         }
-        setTimeout(() => {
-          console.log('setting history view', [...n, k])
-          setChatHistoryView([...n, k])
-        }, timeout * 10)
-        n.push(k)
-      })
+
+        messageQueue.push({ message: resp, delay })
+      });
+
+      function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+      }
+
+      // Process each message in the queue
+      (async () => {
+        for (let i = 0; i < messageQueue.length; i++) {
+          const { message, delay } = messageQueue[i]
+          console.log('Processing message', message, 'with delay', delay)
+          await timeout(delay)
+          filteredHistory.push(message)
+          setChatHistoryView([...filteredHistory])
+        }
+      })()
     }
   }
 
@@ -321,7 +342,7 @@ const Chatroom = ({ navigation, route }) => {
 
   function resetPendingMsgTimer() {
     if (pendingMsgChain.length === 0) {
-      return 
+      return
     }
     let f = () => sendMessageChain(pendingMsgChain)
     if (pendingSendTimer !== null) {
