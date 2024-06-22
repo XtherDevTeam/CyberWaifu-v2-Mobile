@@ -28,6 +28,7 @@ import Settings from './pages/Settings';
 import SignIn from './pages/SignIn';
 import Sticker from './pages/Sticker';
 import TTSService from './pages/TTSService';
+import VoiceChat from './pages/VoiceChat';
 import { mdTheme } from './shared/styles';
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
@@ -98,6 +99,8 @@ export default function App() {
             <Stack.Screen name="Edit TTS Service" options={{ headerShown: false }} component={
               EditTTSService
             }
+            />
+            <Stack.Screen name="Voice Chat" options={{ headerShown: false }} component={VoiceChat}
             />
           </Stack.Navigator>
         </NavigationContainer>

@@ -496,6 +496,9 @@ const Chatroom = ({ navigation, route }) => {
                   })
                   chatImages.current = []
                 }}></IconButton>
+                <IconButton icon="microphone" style={{ flex: 2 }} onPress={() => {
+                  navigation.navigate('Voice Chat', { charName: charName, charId: charId, })
+                }}></IconButton>
                 <IconButton icon="dots-vertical" style={{ flex: 2 }} onPress={() => {
                   if (menuStatus) {
                     triggerAnimation()

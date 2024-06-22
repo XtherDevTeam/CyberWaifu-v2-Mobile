@@ -274,6 +274,17 @@ function updatePassword(password) {
     password
   })
 }
+function rtVcEstablish(charName) {
+  return axios.post(`${serverUrl}/api/v1/rtvc/establish`, {
+    charName
+  })
+}
+
+function rtVcTerminate(session) {
+  return axios.post(`${serverUrl}/api/v1/rtvc/terminate`, {
+    session
+  })
+}
 
 export {
   addStickerToSet,
@@ -308,6 +319,8 @@ export {
   initialize,
   refreshServerUrl,
   renameStickerSet,
+  rtVcEstablish,
+  rtVcTerminate,
   signIn,
   splitEmotionAndText,
   stickerGet,
