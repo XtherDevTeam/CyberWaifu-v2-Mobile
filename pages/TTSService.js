@@ -28,12 +28,14 @@ const NewTTSServiceDialog = ({ state, onDismiss, onOk, onErr }) => {
   const [name, setName] = React.useState('')
   const [description, setDescription] = React.useState('')
   const [url, setUrl] = React.useState('')
+  const [ttsInferYamlPath, setTTSInferYamlPath] = React.useState('')
   const TextInputRef1 = React.useRef(null)
   const TextInputRef2 = React.useRef(null)
   const TextInputRef3 = React.useRef(null)
+  const TextInputRef4 = React.useRef(null)
 
-  const submit = (name, description, url) => {
-    Remote.createTTSService(name, description, url).then(data => {
+  const submit = (name, description, url, ttsInferYamlPath) => {
+    Remote.createTTSService(name, description, url, ttsInferYamlPath).then(data => {
       if (data.data.status) {
         onOk()
       } else {
@@ -50,20 +52,22 @@ const NewTTSServiceDialog = ({ state, onDismiss, onOk, onErr }) => {
           TextInputRef1.current?.blur()
           TextInputRef2.current?.blur()
           TextInputRef3.current?.blur()
+          TextInputRef4.current?.blur()
         }
       }><View>
           <Text variant='bodyMedium'>
-            TTS service should be a GPT-SoVits API endpoint instance, with pre-trained model loaded, allowing you to make character speak in their voice.
+            If you are using fast_inference_ branch of GPT-SoVITS, you should provide the path to tts_infer.yaml properly.
           </Text>
           <TextInput ref={TextInputRef1} style={{ marginTop: 10 }} label={'TTS Service name'} value={name} onChangeText={v => setName(v)}></TextInput>
           <TextInput ref={TextInputRef2} style={{ marginTop: 10 }} label={'TTS Service description'} multiline={true} value={description} onChangeText={v => setDescription(v)}></TextInput>
           <TextInput ref={TextInputRef3} style={{ marginTop: 10 }} label={'TTS Service endpoint'} multiline={true} value={url} onChangeText={v => setUrl(v)}></TextInput>
+          <TextInput ref={TextInputRef4} style={{ marginTop: 10 }} label={'Path to tts_infer.yaml'} placeholder='GPT_SoVITS/configs/tts_infer.yaml' multiline={true} value={ttsInferYamlPath} onChangeText={v => setTTSInferYamlPath(v)}></TextInput>
         </View>
       </TouchableWithoutFeedback>
     </Dialog.Content>
     <Dialog.Actions>
       <Button onPress={() => onDismiss()}>Cancel</Button>
-      <Button onPress={() => submit(name, description, url)}>Create</Button>
+      <Button onPress={() => submit(name, description, url, ttsInferYamlPath)}>Create</Button>
     </Dialog.Actions>
   </Dialog>
 }

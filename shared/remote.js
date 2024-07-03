@@ -211,11 +211,12 @@ function splitEmotionAndText(emotions, text) {
   return result;
 }
 
-function createTTSService(name, description, url) {
+function createTTSService(name, description, url, ttsInferYamlPath) {
   return axios.post(`${serverUrl}/api/v1/tts/service/create`, {
     name,
     description,
     url,
+    ttsInferYamlPath
   })
 }
 
@@ -249,12 +250,13 @@ function deleteTTSService(id) {
   })
 }
 
-function updateTTSService(id, name, description, url) {
+function updateTTSService(id, name, description, url, ttsInferYamlPath) {
   return axios.post(`${serverUrl}/api/v1/tts/service/update`, {
     id,
     name,
     description,
     url,
+    ttsInferYamlPath
   })
 }
 

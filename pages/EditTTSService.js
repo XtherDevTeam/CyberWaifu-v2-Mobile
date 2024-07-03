@@ -143,6 +143,7 @@ const EditTTSService = ({ navigation, route }) => {
 
   const [TTSServiceName, setTTSServiceName] = React.useState("")
   const [TTSServiceUrl, setTTSServiceUrl] = React.useState("")
+  const [TTSInferYaml, setTTSInferYaml] = React.useState("")
   const [TTSServiceDescription, setTTSServiceDescription] = React.useState("")
   const [deleteTTSReferenceDialogState, setDeleteTTSReferenceDialogState] = React.useState({ state: false, refAudioId: null })
   const [ttsServiceInfo, setTTSServiceInfo] = React.useState({
@@ -169,6 +170,7 @@ const EditTTSService = ({ navigation, route }) => {
     setTTSServiceName(route.params.name)
     setTTSServiceDescription(route.params.description)
     setTTSServiceUrl(route.params.url)
+    setTTSInferYaml(route.params.ttsInferYamlPath)
     updateTTSServiceInfo()
   }, []))
 
@@ -209,8 +211,16 @@ const EditTTSService = ({ navigation, route }) => {
                     value={TTSServiceUrl}
                     onChangeText={(v) => setTTSServiceUrl(v)}
                   />
+                  <TextInput
+                    label="Path to tts_infer.yaml"
+                    multiline={true}
+                    placeholder='GPT_SoVITS/configs/tts_infer.yaml'
+                    style={{ width: '90%', marginTop: 20 }}
+                    value={TTSInferYaml}
+                    onChangeText={(v) => setTTSInferYaml(v)}
+                  />
                   <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20 }} onPress={() => {
-                    Remote.updateTTSService(route.params.id, TTSServiceName, TTSServiceDescription, TTSServiceUrl).then(r => {
+                    Remote.updateTTSService(route.params.id, TTSServiceName, TTSServiceDescription, TTSServiceUrl, TTSInferYaml).then(r => {
                       if (r.data.status) {
                         setMessageText('Updated TTS service information successfully.')
                         setMessageState(true)
