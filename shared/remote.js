@@ -211,6 +211,14 @@ function splitEmotionAndText(emotions, text) {
   return result;
 }
 
+function getServiceInfo() {
+  return axios.get(`${serverUrl}/api/v1/service/info`)
+}
+
+function updateUserPersona(persona) {
+  return axios.post(`${serverUrl}/api/v1/update_persona`, {persona})
+}
+
 function createTTSService(name, description, url, ttsInferYamlPath) {
   return axios.post(`${serverUrl}/api/v1/tts/service/create`, {
     name,
@@ -314,6 +322,7 @@ export {
   editCharacter,
   getAvatar,
   getCharacterInfo,
+  getServiceInfo,
   getStickerSetInfo,
   getTTSServiceInfo,
   getTTSServiceList,
@@ -334,4 +343,5 @@ export {
   updatePassword,
   updateTTSService,
   updateUserName,
+  updateUserPersona,
 };

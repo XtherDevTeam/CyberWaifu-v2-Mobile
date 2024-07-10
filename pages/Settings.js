@@ -18,18 +18,36 @@ import version from '../shared/version';
 
 const Settings = ({ navigation }) => {
   const [userName, setUserName] = React.useState('');
+  const [userPersona, setUserPersona] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [messageState, setMessageState] = React.useState(false)
   const [messageText, setMessageText] = React.useState("")
 
   React.useEffect(() => {
-    Remote.getUserName().then(d => {
-      setUserName(d)
+    Remote.getServiceInfo().then(d => {
+      if (d.status) {
+      setUserName(d.data.data.session_username)
+      setUserPersona(d.data.data.user_persona)}
     }).catch(e => {
       setMessageState(true)
       setMessageText("NetworkError")
     })
   }, [])
+
+  function submitUserPersona(userPersona) {
+    Remote.updateUserPersona(userPersona).then(d => {
+      if (d.data.status) {
+        setMessageState(true)
+        setMessageText("User persona updated successfully.")
+      } else {
+        setMessageState(true)
+        setMessageText(d.data.data)
+      }
+    }).catch(e => {
+      setMessageState(true)
+      setMessageText("NetworkError")
+    })
+  }
 
   function submitUserName(userName) {
     Remote.updateUserName(userName).then(d => {
@@ -71,12 +89,20 @@ const Settings = ({ navigation }) => {
         <ScrollView>
           <List.Section>
             <ContentEditDialog
-              title="User name"
+              title="User Name"
               description="The name you will be used to chat with your waifus."
               placeholder="Jerry Chou"
               style={{ paddingHorizontal: 10, paddingVertical: 20 }}
               defaultValue={userName}
               onOk={v => {setUserName(v); submitUserName(v)}}
+            />
+            <ContentEditDialog
+              title="User Persona"
+              description="User persona is used to describe your personality and interests so as to enhance your experience by helping waifu understand you better."
+              placeholder="A high-school student, who loves playing video games and watching anime."
+              style={{ paddingHorizontal: 10, paddingVertical: 20 }}
+              defaultValue={userPersona}
+              onOk={v => {setUserPersona(v); submitUserPersona(v)}}
             />
             <PasswordEditConfirmDialog
               title="Password"
