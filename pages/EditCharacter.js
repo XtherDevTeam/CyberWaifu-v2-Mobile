@@ -23,7 +23,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import ContentEditDialog from '../components/ContentEditDialog';
 import Message from '../components/Message';
 import StickerSetSelector from '../components/StickerSetSelector';
-import TTSServiceSelector from '../components/TTSServiceSelector';
+import GPTSoVitsModelSelector from '../components/GPTSoVitsModelSelector';
 import * as Remote from '../shared/remote';
 import * as storage from '../shared/storage';
 import { mdTheme } from '../shared/styles';
@@ -38,7 +38,7 @@ const EditCharacter = ({ navigation, route }) => {
   const [pastMemories, setPastMemories] = React.useState("")
   const [exampleChats, setExampleChats] = React.useState("")
   const [useStickerSet, setUseStickerSet] = React.useState(null)
-  const [useTTSService, setUseTTSService] = React.useState(null)
+  const [useTTSModel, setUseTTSModel] = React.useState("None")
 
   const charNameInputRef = React.useRef(null)
   const charPromptInputRef = React.useRef(null)
@@ -59,18 +59,11 @@ const EditCharacter = ({ navigation, route }) => {
             setUseStickerSet(r.data.data)
           }
         })
-        if (r.data.data.ttsServiceId !== 0) {
-          Remote.getTTSServiceInfo(r.data.data.ttsServiceId).then(r => {
-            if (r.status) {
-              setUseTTSService(r.data.data)
-            }
-          })
+        if (r.data.data.AIDubUseModel !== "None") {
+          setUseTTSModel(r.data.data.AIDubUseModel)
+          console.log(r.data.data.AIDubUseModel)
         } else {
-          setUseTTSService({
-            id: 0,
-            name: "None",
-            description: "Do not use TTS service during conversation"
-          })
+          setUseTTSModel("None")
         }
       } else {
         setMessageText(`Unable to get character info: ${r.data.data}`)
@@ -102,8 +95,8 @@ const EditCharacter = ({ navigation, route }) => {
     })
   }
 
-  function onSubmit(charId, charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats) {
-    Remote.editCharacter(charId, charName, charPrompt, pastMemories, exampleChats, useStickerSet, useTTSService).then(r => {
+  function onSubmit(charId, charName, useTTSModel, useStickerSet, charPrompt, pastMemories, exampleChats) {
+    Remote.editCharacter(charId, charName, charPrompt, pastMemories, exampleChats, useStickerSet, useTTSModel).then(r => {
       if (r.data.status) {
         navigation.goBack()
       } else {
@@ -155,14 +148,14 @@ const EditCharacter = ({ navigation, route }) => {
                     onOk={v => setCharName(v)}
                   />
 
-                  <TTSServiceSelector
+                  <GPTSoVitsModelSelector
                     style={{ paddingHorizontal: 10, paddingVertical: 20}}
-                    onChange={v => setUseTTSService(v)}
-                    defaultValue={useTTSService}
+                    onChange={v => setUseTTSModel(v)}
+                    defaultValue={useTTSModel}
                     onErr={v => {
-                      setMessageText(`Unable to select TTS service: ${v}`)
+                      setMessageText(`Unable to select TTS model: ${v}`)
                       setMessageState(true)
-                    }}></TTSServiceSelector>
+                    }}></GPTSoVitsModelSelector>
 
                   <StickerSetSelector
                     style={{ paddingHorizontal: 10, paddingVertical: 20}}
@@ -205,7 +198,7 @@ const EditCharacter = ({ navigation, route }) => {
 
 
                 <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                  onSubmit(charId, charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
+                  onSubmit(charId, charName, useTTSModel, useStickerSet.id, charPrompt, pastMemories, exampleChats)
                 }}>Edit</Button>
               </View>
 

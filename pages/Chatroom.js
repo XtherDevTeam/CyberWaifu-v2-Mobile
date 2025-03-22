@@ -410,7 +410,7 @@ const Chatroom = ({ navigation, route }) => {
                 >
                   {(v.role.startsWith('model')) && (
                     <>
-                      <Avatar.Image style={{ marginRight: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.charAvatar(route.params.charId)} />}></Avatar.Image>
+                      <Avatar.Image style={{ marginRight: 10 }} size={48} source={() => <CachedImage style={{ width: 48, height: 48, borderRadius: 24 }} imageStyle={{ borderRadius: 24 }} source={Remote.charAvatar(route.params.charId)} />}></Avatar.Image>
                       <View style={{ flexDirection: 'column' }}>
                         <Text style={{ marginBottom: 5, textAlign: 'left' }}>{route.params.charName}</Text>
                         {v.type == 0 &&
@@ -443,7 +443,7 @@ const Chatroom = ({ navigation, route }) => {
                           </TouchableRipple>}
                         {v.type == 2 && <Card style={{ alignSelf: 'flex-end', minWidth: 100, maxWidth: '85%' }}><AudioMessageView audioAttachment={v.text}></AudioMessageView></Card>}
                       </View>
-                      <Avatar.Image style={{ marginLeft: 10 }} source={() => <CachedImage style={{ width: 64, height: 64, borderRadius: 32 }} imageStyle={{ borderRadius: 32 }} source={Remote.getAvatar()} />}></Avatar.Image>
+                      <Avatar.Image style={{ marginLeft: 10 }} size={48} source={() => <CachedImage style={{ width: 48, height: 48, borderRadius: 24 }} imageStyle={{ borderRadius: 24, height: 48, width: 48 }} source={Remote.getAvatar()} />}></Avatar.Image>
                     </>
                   )}
                 </View>

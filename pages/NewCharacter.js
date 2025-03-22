@@ -29,6 +29,7 @@ import StickerSetSelector from '../components/StickerSetSelector';
 import TTSServiceSelector from '../components/TTSServiceSelector';
 import * as Remote from '../shared/remote';
 import { mdTheme } from '../shared/styles';
+import GPTSoVitsModelSelector from '../components/GPTSoVitsModelSelector';
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
   reactNavigationLight: NavigationDefaultTheme,
@@ -45,7 +46,7 @@ const NewCharacter = ({ navigation, route }) => {
   const [pastMemories, setPastMemories] = React.useState("")
   const [exampleChats, setExampleChats] = React.useState("")
   const [useStickerSet, setUseStickerSet] = React.useState({})
-  const [useTTSService, setUseTTSService] = React.useState(null)
+  const [useTTSModel, setUseTTSModel] = React.useState("None")
 
   const charNameInputRef = React.useRef(null)
   const charPromptInputRef = React.useRef(null)
@@ -54,15 +55,11 @@ const NewCharacter = ({ navigation, route }) => {
   const scrollViewRef = React.useRef(null)
 
   useFocusEffect(React.useCallback(() => {
-    setUseTTSService({
-      id: 0,
-      name: "None",
-      description: "Do not use TTS service during conversation"
-    })
+    setUseTTSModel("None")
   }, []))
 
-  function onSubmit(charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats) {
-    Remote.charNew(charName, useTTSService, useStickerSet, charPrompt, pastMemories, exampleChats).then(r => {
+  function onSubmit(charName, useTTSModel, useStickerSet, charPrompt, pastMemories, exampleChats) {
+    Remote.charNew(charName, useTTSModel, useStickerSet, charPrompt, pastMemories, exampleChats).then(r => {
       if (r.data.status) {
         navigation.goBack()
       } else {
@@ -101,14 +98,14 @@ const NewCharacter = ({ navigation, route }) => {
                     onOk={v => setCharName(v)}
                   />
 
-                  <TTSServiceSelector
+                  <GPTSoVitsModelSelector
                     style={{ paddingHorizontal: 10, paddingVertical: 20 }}
-                    onChange={v => setUseTTSService(v)}
-                    defaultValue={useTTSService}
+                    onChange={v => setUseTTSModel(v)}
+                    defaultValue={useTTSModel}
                     onErr={v => {
-                      setMessageText(`Unable to select TTS service: ${v}`)
+                      setMessageText(`Unable to select TTS model: ${v}`)
                       setMessageState(true)
-                    }}></TTSServiceSelector>
+                    }}></GPTSoVitsModelSelector>
 
                   <StickerSetSelector
                     style={{ paddingHorizontal: 10, paddingVertical: 20 }}
@@ -149,7 +146,7 @@ const NewCharacter = ({ navigation, route }) => {
                 </List.Section>
 
                 <Button mode='contained-tonal' style={{ width: '90%', marginTop: 20, marginBottom: 20 }} onPress={() => {
-                  onSubmit(charName, useTTSService.id, useStickerSet.id, charPrompt, pastMemories, exampleChats)
+                  onSubmit(charName, useTTSModel, useStickerSet.id, charPrompt, pastMemories, exampleChats)
                 }}>Create</Button>
               </View>
 

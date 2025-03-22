@@ -28,6 +28,7 @@ import Settings from './pages/Settings';
 import SignIn from './pages/SignIn';
 import Sticker from './pages/Sticker';
 import TTSService from './pages/TTSService';
+import TTSModel from './pages/TTSModel';
 import VoiceChat from './pages/VoiceChat';
 import { mdTheme } from './shared/styles';
 
@@ -48,9 +49,9 @@ function MainPage({ }) {
       <Tab.Screen name="Stickers" options={{
         tabBarIcon: "sticker-emoji"
       }} component={Sticker} />
-      <Tab.Screen name="TTS Services" options={{
+      <Tab.Screen name="TTS Model" options={{
         tabBarIcon: "microphone"
-      }} component={TTSService} />
+      }} component={TTSModel} />
       <Tab.Screen name="Settings" options={{
         tabBarIcon: "cog"
       }} component={Settings} />
