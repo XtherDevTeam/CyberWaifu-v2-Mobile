@@ -38,18 +38,13 @@ jobs:
       run: |
         npm install
 
-    - name: Prebuilds
+    - name: EAS build
       run: |
-        npx expo prebuild
-    
-    - name: Build
-      run: |
-        cd android; ./gradlew assembleRelease
-
+        npx eas build --platform android --profile production --non-interactive --no-publish --local --verbose
           
     - name: upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: android-build
-        path: android/app/build/outputs/apk
+        path: ./*.apk
         
