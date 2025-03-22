@@ -1,0 +1,424 @@
+[
+    {
+        "label": "gdb.printing",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "gdb.printing",
+        "description": "gdb.printing",
+        "detail": "gdb.printing",
+        "documentation": {}
+    },
+    {
+        "label": "print_function",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "errno",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "errno",
+        "description": "errno",
+        "detail": "errno",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "shutil",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shutil",
+        "description": "shutil",
+        "detail": "shutil",
+        "documentation": {}
+    },
+    {
+        "label": "subprocess",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "subprocess",
+        "description": "subprocess",
+        "detail": "subprocess",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "OutcomeBasicOutcomePrinter",
+        "kind": 6,
+        "importPath": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "description": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "peekOfCode": "class OutcomeBasicOutcomePrinter(object):\n    \"\"\"Print an outcome::basic_outcome<T>\"\"\"\n    def __init__(self, val):\n        self.val = val\n    def children(self):\n        if self.val['_state']['_status']['status_value'] & 1 == 1:\n            yield ('value', self.val['_state']['_value'])\n        if self.val['_state']['_status']['status_value'] & 2 == 2:\n            yield ('error', self.val['_state']['_error'])\n        if self.val['_state']['_status']['status_value'] & 4 == 4:",
+        "detail": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "documentation": {}
+    },
+    {
+        "label": "build_pretty_printer",
+        "kind": 2,
+        "importPath": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "description": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "peekOfCode": "def build_pretty_printer():\n    pp = gdb.printing.RegexpCollectionPrettyPrinter(\"outcome_v2\")\n    pp.add_printer('outcome_v2::basic_result', '^outcome_v2[_0-9a-f]*::basic_result<.*>$', OutcomeBasicOutcomePrinter)\n    pp.add_printer('outcome_v2::basic_outcome', '^outcome_v2[_0-9a-f]*::basic_outcome<.*>$', OutcomeBasicOutcomePrinter)\n    return pp\ndef register_printers(obj = None):\n    gdb.printing.register_pretty_printer(obj, build_pretty_printer(), replace = True)\nregister_printers(gdb.current_objfile())",
+        "detail": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "documentation": {}
+    },
+    {
+        "label": "register_printers",
+        "kind": 2,
+        "importPath": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "description": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "peekOfCode": "def register_printers(obj = None):\n    gdb.printing.register_pretty_printer(obj, build_pretty_printer(), replace = True)\nregister_printers(gdb.current_objfile())",
+        "detail": "ios.Pods.boost.boost.outcome.outcome.gdb",
+        "documentation": {}
+    },
+    {
+        "label": "build_gn_args",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def build_gn_args(platform_args):\n    return \"--args='\" + ' '.join(GN_COMMON_ARGS + platform_args) + \"'\"\nGN_COMMON_ARGS = [\n    'rtc_libvpx_build_vp9=true',\n    'rtc_enable_protobuf=false',\n    'rtc_include_tests=false',\n    'is_debug=%s',\n    'target_cpu=\"%s\"'\n]\n_GN_APPLE_COMMON = [",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "sh",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def sh(cmd, env=None, cwd=None):\n    print('Running cmd: %s' % cmd)\n    try:\n        subprocess.check_call(cmd, env=env, cwd=cwd, shell=True, stdin=sys.stdin, stdout=sys.stdout, stderr=subprocess.STDOUT)\n    except subprocess.CalledProcessError as e:\n        sys.exit(e.returncode)\n    except KeyboardInterrupt:\n        pass\ndef mkdirp(path):\n    try:",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "mkdirp",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def mkdirp(path):\n    try:\n        os.makedirs(path)\n    except OSError as e:\n        if e.errno != errno.EEXIST:\n            raise\ndef rmr(path):\n    try:\n        shutil.rmtree(path)\n    except OSError as e:",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "rmr",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def rmr(path):\n    try:\n        shutil.rmtree(path)\n    except OSError as e:\n        if e.errno != errno.ENOENT:\n            raise\n# The Real Deal\ndef setup(target_dir, platform):\n    mkdirp(target_dir)\n    os.chdir(target_dir)",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "setup",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def setup(target_dir, platform):\n    mkdirp(target_dir)\n    os.chdir(target_dir)\n    # Maybe fetch depot_tools\n    depot_tools_dir = os.path.join(target_dir, 'depot_tools')\n    if not os.path.isdir(depot_tools_dir):\n        print('Fetching Chromium depot_tools...')\n        sh('git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git')\n    # Prepare environment\n    env = os.environ.copy()",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "sync",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def sync(target_dir, platform):\n    build_dir = os.path.join(target_dir, 'build', platform)\n    depot_tools_dir = os.path.join(target_dir, 'depot_tools')\n    webrtc_dir = os.path.join(target_dir, 'webrtc', platform, 'src')\n    if not os.path.isdir(webrtc_dir):\n        print('WebRTC source not found, did you forget to run --setup?')\n        sys.exit(1)\n    # Prepare environment\n    env = os.environ.copy()\n    path_parts = [env['PATH'], depot_tools_dir]",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "build",
+        "kind": 2,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "def build(target_dir, platform, debug):\n    build_dir = os.path.join(target_dir, 'build', platform)\n    build_type = 'Debug' if debug else 'Release'\n    depot_tools_dir = os.path.join(target_dir, 'depot_tools')\n    webrtc_dir = os.path.join(target_dir, 'webrtc', platform, 'src')\n    if not os.path.isdir(webrtc_dir):\n        print('WebRTC source not found, did you forget to run --setup?')\n        sys.exit(1)\n    # Prepare environment\n    env = os.environ.copy()",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "APPLE_FRAMEWORK_NAME",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "APPLE_FRAMEWORK_NAME = 'WebRTC.framework'\nAPPLE_DSYM_NAME = 'WebRTC.dSYM'\nANDROID_CPU_ABI_MAP = {\n    'arm'   : 'armeabi-v7a',\n    'arm64' : 'arm64-v8a',\n    'x86'   : 'x86',\n    'x64'   : 'x86_64'\n}\nANDROID_BUILD_CPUS = [\n    'arm',",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "APPLE_DSYM_NAME",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "APPLE_DSYM_NAME = 'WebRTC.dSYM'\nANDROID_CPU_ABI_MAP = {\n    'arm'   : 'armeabi-v7a',\n    'arm64' : 'arm64-v8a',\n    'x86'   : 'x86',\n    'x64'   : 'x86_64'\n}\nANDROID_BUILD_CPUS = [\n    'arm',\n    'arm64',",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "ANDROID_CPU_ABI_MAP",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "ANDROID_CPU_ABI_MAP = {\n    'arm'   : 'armeabi-v7a',\n    'arm64' : 'arm64-v8a',\n    'x86'   : 'x86',\n    'x64'   : 'x86_64'\n}\nANDROID_BUILD_CPUS = [\n    'arm',\n    'arm64',\n    'x86',",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "ANDROID_BUILD_CPUS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "ANDROID_BUILD_CPUS = [\n    'arm',\n    'arm64',\n    'x86',\n    'x64'\n]\nIOS_BUILD_ARCHS = [\n    'device:arm64',\n    'simulator:arm64',\n    'simulator:x64'",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "IOS_BUILD_ARCHS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "IOS_BUILD_ARCHS = [\n    'device:arm64',\n    'simulator:arm64',\n    'simulator:x64'\n]\nMACOS_BUILD_ARCHS = [\n    'x64'\n]\ndef build_gn_args(platform_args):\n    return \"--args='\" + ' '.join(GN_COMMON_ARGS + platform_args) + \"'\"",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "MACOS_BUILD_ARCHS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "MACOS_BUILD_ARCHS = [\n    'x64'\n]\ndef build_gn_args(platform_args):\n    return \"--args='\" + ' '.join(GN_COMMON_ARGS + platform_args) + \"'\"\nGN_COMMON_ARGS = [\n    'rtc_libvpx_build_vp9=true',\n    'rtc_enable_protobuf=false',\n    'rtc_include_tests=false',\n    'is_debug=%s',",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "GN_COMMON_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "GN_COMMON_ARGS = [\n    'rtc_libvpx_build_vp9=true',\n    'rtc_enable_protobuf=false',\n    'rtc_include_tests=false',\n    'is_debug=%s',\n    'target_cpu=\"%s\"'\n]\n_GN_APPLE_COMMON = [\n    'enable_dsyms=true',\n    'enable_stripping=true',",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "_GN_APPLE_COMMON",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "_GN_APPLE_COMMON = [\n    'enable_dsyms=true',\n    'enable_stripping=true',\n    'rtc_enable_symbol_export=false',\n    'rtc_enable_objc_symbol_export=true'\n]\n_GN_IOS_ARGS = [\n    'ios_deployment_target=\"12.0\"',\n    'ios_enable_code_signing=false',\n    'target_os=\"ios\"',",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "_GN_IOS_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "_GN_IOS_ARGS = [\n    'ios_deployment_target=\"12.0\"',\n    'ios_enable_code_signing=false',\n    'target_os=\"ios\"',\n    'target_environment=\"%s\"'\n]\nGN_IOS_ARGS = build_gn_args(_GN_APPLE_COMMON + _GN_IOS_ARGS)\n_GN_MACOS_ARGS = [\n    'target_os=\"mac\"'\n]",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "GN_IOS_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "GN_IOS_ARGS = build_gn_args(_GN_APPLE_COMMON + _GN_IOS_ARGS)\n_GN_MACOS_ARGS = [\n    'target_os=\"mac\"'\n]\nGN_MACOS_ARGS = build_gn_args(_GN_APPLE_COMMON + _GN_MACOS_ARGS)\n_GN_ANDROID_ARGS = [\n    'target_os=\"android\"'\n]\nGN_ANDROID_ARGS = build_gn_args(_GN_ANDROID_ARGS)\n# Utilities",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "_GN_MACOS_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "_GN_MACOS_ARGS = [\n    'target_os=\"mac\"'\n]\nGN_MACOS_ARGS = build_gn_args(_GN_APPLE_COMMON + _GN_MACOS_ARGS)\n_GN_ANDROID_ARGS = [\n    'target_os=\"android\"'\n]\nGN_ANDROID_ARGS = build_gn_args(_GN_ANDROID_ARGS)\n# Utilities\ndef sh(cmd, env=None, cwd=None):",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "GN_MACOS_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "GN_MACOS_ARGS = build_gn_args(_GN_APPLE_COMMON + _GN_MACOS_ARGS)\n_GN_ANDROID_ARGS = [\n    'target_os=\"android\"'\n]\nGN_ANDROID_ARGS = build_gn_args(_GN_ANDROID_ARGS)\n# Utilities\ndef sh(cmd, env=None, cwd=None):\n    print('Running cmd: %s' % cmd)\n    try:\n        subprocess.check_call(cmd, env=env, cwd=cwd, shell=True, stdin=sys.stdin, stdout=sys.stdout, stderr=subprocess.STDOUT)",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "_GN_ANDROID_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "_GN_ANDROID_ARGS = [\n    'target_os=\"android\"'\n]\nGN_ANDROID_ARGS = build_gn_args(_GN_ANDROID_ARGS)\n# Utilities\ndef sh(cmd, env=None, cwd=None):\n    print('Running cmd: %s' % cmd)\n    try:\n        subprocess.check_call(cmd, env=env, cwd=cwd, shell=True, stdin=sys.stdin, stdout=sys.stdout, stderr=subprocess.STDOUT)\n    except subprocess.CalledProcessError as e:",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "GN_ANDROID_ARGS",
+        "kind": 5,
+        "importPath": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "description": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "peekOfCode": "GN_ANDROID_ARGS = build_gn_args(_GN_ANDROID_ARGS)\n# Utilities\ndef sh(cmd, env=None, cwd=None):\n    print('Running cmd: %s' % cmd)\n    try:\n        subprocess.check_call(cmd, env=env, cwd=cwd, shell=True, stdin=sys.stdin, stdout=sys.stdout, stderr=subprocess.STDOUT)\n    except subprocess.CalledProcessError as e:\n        sys.exit(e.returncode)\n    except KeyboardInterrupt:\n        pass",
+        "detail": "node_modules.@livekit.react-native-webrtc.tools.build-webrtc",
+        "documentation": {}
+    },
+    {
+        "label": "get_users",
+        "kind": 2,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "def get_users():\n    \"\"\"\n    Retrieves a list of all users from Gitea.\n    \"\"\"\n    try:\n        response = requests.get(\n            USERS_API_ENDPOINT,\n            auth=(API_USERNAME, API_PASSWORD),\n            headers={'Accept': 'application/json'}\n        )",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "get_user_repos",
+        "kind": 2,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "def get_user_repos(username):\n    \"\"\"\n    Retrieves a list of repositories owned by a specific user.\n    \"\"\"\n    try:\n        response = requests.get(\n            REPOS_API_ENDPOINT % username,\n            auth=(API_USERNAME, API_PASSWORD),\n            headers={'Accept': 'application/json'}\n        )",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "delete_repo",
+        "kind": 2,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "def delete_repo(username, repo_name):\n    \"\"\"\n    Deletes a specific repository.\n    \"\"\"\n    try:\n        response = requests.delete(\n            DELETE_REPO_API_ENDPOINT % (username, repo_name),\n            auth=(API_USERNAME, API_PASSWORD),\n            headers={'Accept': 'application/json'}\n        )",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "delete_user",
+        "kind": 2,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "def delete_user(username):\n    \"\"\"\n    Deletes a specific user.\n    \"\"\"\n    try:\n        response = requests.delete(\n            DELETE_USER_API_ENDPOINT % username,\n            auth=(API_USERNAME, API_PASSWORD),\n            headers={'Accept': 'application/json'}\n        )",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "def main():\n    \"\"\"\n    Main function to retrieve users, delete their repos, and then delete the users.\n    \"\"\"\n    users = get_users()\n    if not users:\n        print(\"Failed to retrieve user list. Exiting.\")\n        return\n    users_to_delete = [user for user in users if user['username'] != EXCLUDE_USER]\n    assert EXCLUDE_USER not in users_to_delete, \"Failed to find user to exclude.\"",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "GITEA_URL",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "GITEA_URL = \"http://www.xiaokang00010.top:4001\"  # e.g., \"https://gitea.example.com\"\nAPI_USERNAME = \"xiaokang00010\" # Your Gitea admin username\nAPI_PASSWORD = \"Azhouby123\" # Your Gitea admin password\nEXCLUDE_USER = \"xiaokang00010\"\n# --- API Endpoints ---\nUSERS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users\"\nREPOS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/users/%s/repos\" # %s will be replaced with username\nDELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "API_USERNAME",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "API_USERNAME = \"xiaokang00010\" # Your Gitea admin username\nAPI_PASSWORD = \"Azhouby123\" # Your Gitea admin password\nEXCLUDE_USER = \"xiaokang00010\"\n# --- API Endpoints ---\nUSERS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users\"\nREPOS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/users/%s/repos\" # %s will be replaced with username\nDELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "API_PASSWORD",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "API_PASSWORD = \"Azhouby123\" # Your Gitea admin password\nEXCLUDE_USER = \"xiaokang00010\"\n# --- API Endpoints ---\nUSERS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users\"\nREPOS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/users/%s/repos\" # %s will be replaced with username\nDELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():\n    \"\"\"",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "EXCLUDE_USER",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "EXCLUDE_USER = \"xiaokang00010\"\n# --- API Endpoints ---\nUSERS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users\"\nREPOS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/users/%s/repos\" # %s will be replaced with username\nDELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():\n    \"\"\"\n    Retrieves a list of all users from Gitea.",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "USERS_API_ENDPOINT",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "USERS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users\"\nREPOS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/users/%s/repos\" # %s will be replaced with username\nDELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():\n    \"\"\"\n    Retrieves a list of all users from Gitea.\n    \"\"\"\n    try:",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "REPOS_API_ENDPOINT",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "REPOS_API_ENDPOINT = f\"{GITEA_URL}/api/v1/users/%s/repos\" # %s will be replaced with username\nDELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():\n    \"\"\"\n    Retrieves a list of all users from Gitea.\n    \"\"\"\n    try:\n        response = requests.get(",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "DELETE_USER_API_ENDPOINT",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "DELETE_USER_API_ENDPOINT = f\"{GITEA_URL}/api/v1/admin/users/%s\" # %s will be replaced with username\nDELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():\n    \"\"\"\n    Retrieves a list of all users from Gitea.\n    \"\"\"\n    try:\n        response = requests.get(\n            USERS_API_ENDPOINT,",
+        "detail": "test",
+        "documentation": {}
+    },
+    {
+        "label": "DELETE_REPO_API_ENDPOINT",
+        "kind": 5,
+        "importPath": "test",
+        "description": "test",
+        "peekOfCode": "DELETE_REPO_API_ENDPOINT = f\"{GITEA_URL}/api/v1/repos/%s/%s\" # %s will be replaced with username and repo name\n# --- Functions ---\ndef get_users():\n    \"\"\"\n    Retrieves a list of all users from Gitea.\n    \"\"\"\n    try:\n        response = requests.get(\n            USERS_API_ENDPOINT,\n            auth=(API_USERNAME, API_PASSWORD),",
+        "detail": "test",
+        "documentation": {}
+    }
+]
